@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Exam System (Sistem Ujian Sekolah Modern)
 
-## Getting Started
+Platform ujian berbasis web yang dirancang untuk memudahkan sekolah dalam melaksanakan ujian secara online, aman, dan efisien. Dibangun dengan teknologi web modern untuk performa tinggi dan pengalaman pengguna yang optimal.
 
-First, run the development server:
+## 🚀 Fitur Utama
+
+### 👨‍🎓 Untuk Siswa
+*   **Antarmuka Ujian Fokus:** Desain fullscreen yang meminimalkan gangguan saat mengerjakan soal.
+*   **Navigasi Soal Intuitif:** Mudah berpindah antar soal, menandai ragu-ragu, dan melihat status pengerjaan.
+*   **Timer Real-time:** Penghitung waktu mundur yang akurat.
+*   **Dashboard Informatif:** Melihat jadwal ujian, riwayat nilai, dan statistik performa.
+
+### 👨‍🏫 Untuk Guru (Planned)
+*   **Bank Soal Fleksibel:** Mendukung tipe soal Pilihan Ganda (PG) dan Esai.
+*   **Manajemen Ujian:** Atur waktu mulai, durasi, dan pengacakan soal (randomize).
+*   **Analisis Nilai:** Penilaian otomatis untuk PG dan rekapitulasi nilai instan.
+
+### 🛡️ Keamanan & Admin
+*   **Akses Terbatas:** Sistem tertutup di mana akun siswa dan guru dibuatkan oleh Admin (tidak ada pendaftaran publik).
+*   **Anti-Cheat Dasar:** Deteksi perpindahan tab/jendela (bisa dikembangkan lebih lanjut).
+
+## 🛠️ Teknologi yang Digunakan
+
+*   **Framework:** [Next.js 15+](https://nextjs.org/) (App Router)
+*   **Bahasa:** [TypeScript](https://www.typescriptlang.org/)
+*   **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+*   **Ikon:** Lucide React / Heroicons
+
+## 📂 Struktur Proyek
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+src/
+├── app/
+│   ├── (dashboard)/    # Halaman setelah login (Dashboard Siswa/Guru)
+│   ├── exam/           # Halaman pengerjaan ujian (Fullscreen)
+│   ├── globals.css     # Konfigurasi tema & Tailwind
+│   ├── layout.tsx      # Layout utama aplikasi
+│   └── page.tsx        # Halaman Login (Root)
+├── components/         # Komponen UI reusable (Button, Card, Input)
+└── lib/                # Utilitas & konfigurasi (Database, Helper functions)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 💻 Cara Menjalankan (Local Development)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1.  **Clone repositori ini:**
+    ```bash
+    git clone https://github.com/username/exam-system.git
+    cd exam-system
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2.  **Instal dependensi:**
+    ```bash
+    npm install
+    ```
 
-## Learn More
+3.  **Jalankan server development:**
+    ```bash
+    npm run dev
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+4.  Buka [http://localhost:3000](http://localhost:3000) di browser Anda.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📝 Catatan Pengembang
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+*   **Autentikasi:** Saat ini menggunakan simulasi login. Integrasi database dan sesi (NextAuth/JWT) perlu ditambahkan.
+*   **Database:** Disarankan menggunakan PostgreSQL atau MongoDB. Konfigurasi koneksi ada di `.env` (lihat `.env.example`).
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Dibuat dengan ❤️ untuk kemajuan pendidikan.
