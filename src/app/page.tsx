@@ -1,12 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
+
+    // Simulasi loading
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Simulasi login berhasil -> Masuk ke Dashboard
     router.push("/dashboard");
   };
@@ -14,6 +25,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
+        {/* Header */}
         <div className="text-center">
           <div className="mx-auto h-12 w-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground mb-4">
             <svg
@@ -24,7 +36,7 @@ export default function LoginPage() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-8 w-8"
+              className="h-7 w-7"
             >
               <path d="M22 10v6M2 10v6" />
               <path d="M20 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
@@ -40,46 +52,27 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="rounded-xl bg-card p-8 shadow-sm border border-border">
+        {/* Login Card */}
+        <Card>
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-foreground"
-              >
-                Email / Username
-              </label>
-              <div className="mt-2">
-                <input
-                  id="email"
-                  name="email"
-                  type="text"
-                  autoComplete="username"
-                  required
-                  className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                  placeholder="NISN atau NIP"
-                />
-              </div>
-            </div>
+            <Input
+              id="email"
+              name="email"
+              type="text"
+              autoComplete="username"
+              required
+              label="Email / Username"
+              placeholder="NISN atau NIP"
+            />
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-foreground"
-              >
-                Password
-              </label>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                />
-              </div>
-            </div>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              label="Password"
+            />
 
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -87,11 +80,13 @@ export default function LoginPage() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 rounded border-input text-primary focus:ring-ring"
                 />
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-muted-foreground"
+                  className="ml-2 block text-sm text-muted-foreground cursor-pointer"
                 >
                   Ingat saya
                 </label>
@@ -107,17 +102,17 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors"
-              >
-                Masuk
-              </button>
-            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              isLoading={isLoading}
+            >
+              {isLoading ? "Loading..." : "Masuk"}
+            </Button>
           </form>
-        </div>
+        </Card>
 
+        {/* Footer Note */}
         <p className="text-center text-xs text-muted-foreground">
           Hubungi Administrator jika Anda belum memiliki akun atau mengalami kendala login.
         </p>
