@@ -174,7 +174,7 @@ export default function ExamPage() {
                         </div>
                     </div>
                     <div className="mt-3">
-                        <ProgressBar progress={progress} />
+                        <ProgressBar value={progress} />
                     </div>
                 </div>
             </div>

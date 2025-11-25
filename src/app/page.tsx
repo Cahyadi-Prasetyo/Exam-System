@@ -91,15 +91,6 @@ export default function LoginPage() {
                   Ingat saya
                 </label>
               </div>
-
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-primary hover:text-primary/90"
-                >
-                  Lupa password?
-                </a>
-              </div>
             </div>
 
             <Button

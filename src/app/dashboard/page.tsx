@@ -1,15 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ExamResultNotificationCard } from "@/components/ui/exam-result-notification";
 
 export default function DashboardPage() {
     const router = useRouter();
     const [examCode, setExamCode] = useState("");
     const [isValidating, setIsValidating] = useState(false);
+    const [resultNotifications, setResultNotifications] = useState<any[]>([]);
+
+    // Load notifications from localStorage (demo purposes)
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem("examResultNotifications");
+            if (stored) {
+                try {
+                    const notifications = JSON.parse(stored);
+                    setResultNotifications(notifications);
+                } catch (error) {
+                    console.error("Failed to parse notifications", error);
+                }
+            }
+        }
+    }, []);
+
+    const handleDismissNotification = (id: string) => {
+        const updated = resultNotifications.filter((n) => n.id !== id);
+        setResultNotifications(updated);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem("examResultNotifications", JSON.stringify(updated));
+        }
+    };
 
     const handleSubmitCode = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -89,6 +114,19 @@ export default function DashboardPage() {
                     <p className="text-muted-foreground">Siap untuk ujian hari ini?</p>
                 </div>
 
+                {/* Exam Result Notifications */}
+                {resultNotifications.length > 0 && (
+                    <div className="mb-6 space-y-3">
+                        {resultNotifications.map((notification) => (
+                            <ExamResultNotificationCard
+                                key={notification.id}
+                                notification={notification}
+                                onDismiss={handleDismissNotification}
+                            />
+                        ))}
+                    </div>
+                )}
+
                 {/* Input Kode Ujian - Primary CTA */}
                 <Card className="mb-8 border-2 border-primary/20">
                     <CardHeader>
@@ -104,7 +142,7 @@ export default function DashboardPage() {
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                                    d="M15 7a2 2 0 012 2m4 0a6 6 0  01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                                 />
                             </svg>
                             Masukkan Kode Ujian

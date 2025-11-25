@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-export default function ExamConfirmPage() {
+function ExamConfirmContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const examCode = searchParams.get("code") || "";
@@ -236,5 +237,13 @@ export default function ExamConfirmPage() {
                 </Card>
             </div>
         </div>
+    );
+}
+
+export default function ExamConfirmPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <ExamConfirmContent />
+        </Suspense>
     );
 }
