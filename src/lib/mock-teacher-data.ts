@@ -195,18 +195,14 @@ export const mockViolations: Violation[] = [
 
 // Helper function to get score color
 export function getScoreColor(percentage: number): string {
-    if (percentage >= 90) return "text-green-600";
-    if (percentage >= 75) return "text-blue-600";
-    if (percentage >= 60) return "text-yellow-600";
-    if (percentage >= 45) return "text-red-600";
-    return "text-black dark:text-white font-bold"; // Critical/Failing
+    if (percentage >= 90) return "text-emerald-700 dark:text-emerald-400";
+    if (percentage >= 75) return "text-blue-700 dark:text-blue-400";
+    if (percentage >= 60) return "text-amber-700 dark:text-amber-400";
+    if (percentage >= 45) return "text-orange-700 dark:text-orange-400";
+    return "text-rose-700 dark:text-rose-400 font-bold"; // Critical/Failing
 }
 
 // Helper function to get score background color
 export function getScoreBgColor(percentage: number): string {
-    if (percentage >= 90) return "bg-green-50 dark:bg-green-950/20";
-    if (percentage >= 75) return "bg-blue-50 dark:bg-blue-950/20";
-    if (percentage >= 60) return "bg-yellow-50 dark:bg-yellow-950/20";
-    if (percentage >= 45) return "bg-red-50 dark:bg-red-950/20";
-    return "bg-gray-900 dark:bg-gray-100 text-white dark:text-black"; // Critical
+    return "";
 }

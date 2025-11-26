@@ -15,31 +15,19 @@ export default function TeacherDashboard() {
     const totalViolations = mockExamResults.reduce((sum, r) => sum + r.violations, 0);
 
     return (
-        <div className="min-h-screen bg-muted/20">
+        <div className="p-8">
             {/* Header */}
-            <div className="bg-background border-b border-border">
-                <div className="container mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold">Teacher Dashboard</h1>
-                            <p className="text-sm text-muted-foreground">
-                                Manage exams, view results, and monitor student performance
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => router.push("/")}
-                            className="text-sm text-muted-foreground hover:text-foreground transition"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold tracking-tight">Dashboard Guru</h1>
+                <p className="text-muted-foreground mt-2">
+                    Selamat datang kembali, Pak Budi. Berikut ringkasan aktivitas ujian.
+                </p>
             </div>
 
             {/* Main Content */}
-            <div className="container mx-auto px-6 py-8">
+            <div className="space-y-8">
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <StatCard
                         title="Total Ujian"
                         value={totalExams}
@@ -135,7 +123,7 @@ export default function TeacherDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <button
                         onClick={() => router.push("/teacher/results")}
-                        className="bg-background border-2 border-border rounded-lg p-6 hover:border-primary transition-colors text-left"
+                        className="bg-background rounded-lg p-6 hover:bg-muted/50 transition-colors text-left shadow-sm"
                     >
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
@@ -165,7 +153,7 @@ export default function TeacherDashboard() {
 
                     <button
                         onClick={() => router.push("/teacher/violations")}
-                        className="bg-background border-2 border-border rounded-lg p-6 hover:border-primary transition-colors text-left"
+                        className="bg-background rounded-lg p-6 hover:bg-muted/50 transition-colors text-left shadow-sm"
                     >
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg">
@@ -193,7 +181,7 @@ export default function TeacherDashboard() {
                         </div>
                     </button>
 
-                    <button className="bg-background border-2 border-border rounded-lg p-6 hover:border-primary transition-colors text-left">
+                    <button className="bg-background rounded-lg p-6 hover:bg-muted/50 transition-colors text-left shadow-sm">
                         <div className="flex items-center gap-4">
                             <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
                                 <svg
