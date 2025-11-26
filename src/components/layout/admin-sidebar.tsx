@@ -1,0 +1,119 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+interface AdminSidebarContentProps {
+    onClose?: () => void;
+}
+
+export function AdminSidebarContent({ onClose }: AdminSidebarContentProps) {
+    const pathname = usePathname();
+
+    const navItems = [
+        {
+            name: "Dashboard",
+            href: "/admin/dashboard",
+            icon: (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                </svg>
+            ),
+        },
+        {
+            name: "Manajemen User",
+            href: "/admin/users",
+            icon: (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                </svg>
+            ),
+        },
+    ];
+
+    return (
+        <div className="flex flex-col h-full">
+            {/* Header with close button (mobile) */}
+            <div className="p-6 border-b border-border flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold">Exam System</h1>
+                    <p className="text-sm text-muted-foreground">Admin Panel</p>
+                </div>
+                {onClose && (
+                    <button
+                        onClick={onClose}
+                        className="lg:hidden p-2 hover:bg-accent rounded-lg transition-colors"
+                        aria-label="Close sidebar"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
+                )}
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 p-4 space-y-2">
+                {navItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={onClose}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
+                                    ? "bg-primary text-primary-foreground"
+                                    : "hover:bg-accent"
+                                }`}
+                        >
+                            {item.icon}
+                            <span className="font-medium">{item.name}</span>
+                        </Link>
+                    );
+                })}
+            </nav>
+
+            {/* User Profile */}
+            <div className="p-4 border-t border-border">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-accent">
+                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+                        A
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">Admin User</p>
+                        <p className="text-sm text-muted-foreground">Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function AdminSidebar() {
+    return (
+        <aside className="fixed left-0 top-0 h-screen w-64 bg-background border-r border-border hidden lg:block">
+            <AdminSidebarContent />
+        </aside>
+    );
+}

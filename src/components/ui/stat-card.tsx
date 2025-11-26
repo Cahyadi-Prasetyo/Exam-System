@@ -4,6 +4,7 @@ interface StatCardProps {
     title: string;
     value: string | number;
     icon: React.ReactNode;
+    subtitle?: string;
     trend?: {
         value: number;
         isPositive: boolean;
@@ -11,7 +12,7 @@ interface StatCardProps {
     color?: "blue" | "green" | "yellow" | "red";
 }
 
-export function StatCard({ title, value, icon, trend, color = "blue" }: StatCardProps) {
+export function StatCard({ title, value, icon, subtitle, trend, color = "blue" }: StatCardProps) {
     const colorClasses = {
         blue: "bg-blue-50 text-blue-600 dark:bg-blue-950/20",
         green: "bg-green-50 text-green-600 dark:bg-green-950/20",
@@ -25,6 +26,9 @@ export function StatCard({ title, value, icon, trend, color = "blue" }: StatCard
                 <div className="flex-1">
                     <p className="text-sm text-muted-foreground font-medium mb-1">{title}</p>
                     <p className="text-3xl font-bold text-foreground">{value}</p>
+                    {subtitle && (
+                        <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+                    )}
 
                     {trend && (
                         <div className="flex items-center gap-1 mt-2">
