@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ExamResultNotificationCard } from "@/components/ui/exam-result-notification";
+import { useToast } from "@/hooks/useToast";
 
 export default function DashboardPage() {
     const router = useRouter();
+    const { toast } = useToast();
     const [examCode, setExamCode] = useState("");
     const [isValidating, setIsValidating] = useState(false);
     const [resultNotifications, setResultNotifications] = useState<any[]>([]);
@@ -38,14 +40,47 @@ export default function DashboardPage() {
 
     const handleSubmitCode = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!examCode.trim()) return;
+        if (!examCode.trim()) {
+            toast.error({
+                title: "Kode ujian kosong",
+                description: "Silakan masukkan kode ujian terlebih dahulu"
+            });
+            return;
+        }
+
+        // Validate format (simple example)
+        if (examCode.length < 5) {
+            toast.error({
+                title: "Kode ujian tidak valid",
+                description: "Kode ujian minimal 5 karakter"
+            });
+            return;
+        }
 
         setIsValidating(true);
         // Simulasi validasi kode
         await new Promise((resolve) => setTimeout(resolve, 800));
 
-        // Redirect ke konfirmasi ujian
-        router.push(`/exam/confirm?code=${examCode}`);
+        // Simulate validation result (80% success rate for demo)
+        const isValid = Math.random() > 0.2;
+
+        if (isValid) {
+            toast.success({
+                title: "Kode ujian valid!",
+                description: "Mengarahkan ke halaman konfirmasi..."
+            });
+
+            // Redirect ke konfirmasi ujian
+            setTimeout(() => {
+                router.push(`/exam/confirm?code=${examCode}`);
+            }, 500);
+        } else {
+            setIsValidating(false);
+            toast.error({
+                title: "Kode ujian tidak ditemukan",
+                description: "Periksa kembali kode yang Anda masukkan atau hubungi guru"
+            });
+        }
     };
 
     const handleLogout = () => {
@@ -142,7 +177,7 @@ export default function DashboardPage() {
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
-                                    d="M15 7a2 2 0 012 2m4 0a6 6 0  01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1221 9z"
                                 />
                             </svg>
                             Masukkan Kode Ujian
@@ -154,7 +189,7 @@ export default function DashboardPage() {
                                 value={examCode}
                                 onChange={(e) => setExamCode(e.target.value.toUpperCase())}
                                 placeholder="Contoh: MTK-2024-A1"
-                                className="flex-1 font-mono text-lg"
+                                className="w-full sm:flex-1 font-mono text-lg"
                                 maxLength={20}
                             />
                             <Button
@@ -162,7 +197,7 @@ export default function DashboardPage() {
                                 size="lg"
                                 isLoading={isValidating}
                                 disabled={!examCode.trim()}
-                                className="sm:w-auto"
+                                className="w-full sm:w-auto"
                             >
                                 {isValidating ? "Memvalidasi..." : "Mulai Ujian"}
                             </Button>
@@ -255,8 +290,7 @@ export default function DashboardPage() {
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-5 w-5"
                                     viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
+                                    fill="currentColor">
                                     <path
                                         fillRule="evenodd"
                                         d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"

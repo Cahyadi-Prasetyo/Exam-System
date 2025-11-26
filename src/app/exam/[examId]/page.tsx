@@ -11,7 +11,7 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 const mockExamData = {
     id: "MTK-2024-A1",
     title: "Matematika Wajib - Semester 1",
-    duration: 90, // minutes
+    duration: 90,
     questions: Array.from({ length: 30 }, (_, i) => ({
         id: i + 1,
         question: `Soal nomor ${i + 1}: Tentukan hasil dari 2x + 3y = 12 dan x - y = 2`,
@@ -221,15 +221,15 @@ export default function ExamPage() {
                                             key={option.id}
                                             onClick={() => handleAnswerSelect(option.id)}
                                             className={`w-full text-left p-4 rounded-lg border-2 transition-all ${isSelected
-                                                    ? "border-primary bg-primary/5"
-                                                    : "border-border hover:border-primary/50 hover:bg-accent"
+                                                ? "border-primary bg-primary/5"
+                                                : "border-border hover:border-primary/50 hover:bg-accent"
                                                 }`}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div
                                                     className={`h-6 w-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected
-                                                            ? "border-primary bg-primary text-primary-foreground"
-                                                            : "border-border"
+                                                        ? "border-primary bg-primary text-primary-foreground"
+                                                        : "border-border"
                                                         }`}
                                                 >
                                                     <span className="text-sm font-semibold">{option.id}</span>
@@ -320,10 +320,10 @@ export default function ExamPage() {
                                             key={index}
                                             onClick={() => setCurrentQuestion(index)}
                                             className={`h-12 rounded-lg border-2 font-semibold transition-all relative ${isCurrent
-                                                    ? "border-primary bg-primary text-primary-foreground"
-                                                    : isAnswered
-                                                        ? "border-green-500 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400"
-                                                        : "border-border bg-background hover:border-primary/50"
+                                                ? "border-primary bg-primary text-primary-foreground"
+                                                : isAnswered
+                                                    ? "border-green-500 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400"
+                                                    : "border-border bg-background hover:border-primary/50"
                                                 }`}
                                         >
                                             {index + 1}
