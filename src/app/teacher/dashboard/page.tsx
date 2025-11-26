@@ -15,11 +15,11 @@ export default function TeacherDashboard() {
     const totalViolations = mockExamResults.reduce((sum, r) => sum + r.violations, 0);
 
     return (
-        <div className="p-8">
+        <div className="p-4 md:p-8">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Dashboard Guru</h1>
-                <p className="text-muted-foreground mt-2">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard Guru</h1>
+                <p className="text-sm md:text-base text-muted-foreground mt-2">
                     Selamat datang kembali, Pak Budi. Berikut ringkasan aktivitas ujian.
                 </p>
             </div>
@@ -27,7 +27,7 @@ export default function TeacherDashboard() {
             {/* Main Content */}
             <div className="space-y-8">
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                     <StatCard
                         title="Total Ujian"
                         value={totalExams}

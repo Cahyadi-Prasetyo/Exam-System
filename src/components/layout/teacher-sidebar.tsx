@@ -92,13 +92,18 @@ const menuItems = [
     },
 ];
 
-export function TeacherSidebar() {
+interface TeacherSidebarContentProps {
+    className?: string;
+    onItemClick?: () => void;
+}
+
+export function TeacherSidebarContent({ className = "", onItemClick }: TeacherSidebarContentProps) {
     const pathname = usePathname();
 
     return (
-        <div className="w-64 bg-background border-r border-border h-screen fixed left-0 top-0 flex flex-col">
+        <div className={`bg-background h-full flex flex-col ${className}`}>
             {/* Logo / Header */}
-            <div className="p-6 border-b border-border">
+            <div className="p-6 border-b border-border flex items-center justify-between">
                 <h1 className="text-xl font-bold text-primary flex items-center gap-2">
                     <span className="bg-primary text-primary-foreground p-1 rounded">
                         <svg
@@ -118,6 +123,27 @@ export function TeacherSidebar() {
                     </span>
                     ExamAdmin
                 </h1>
+                {onItemClick && (
+                    <button
+                        onClick={onItemClick}
+                        className="md:hidden p-2 -mr-2 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
+                )}
             </div>
 
             {/* Navigation */}
@@ -128,9 +154,10 @@ export function TeacherSidebar() {
                         <Link
                             key={item.href}
                             href={item.href}
+                            onClick={onItemClick}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
-                                    ? "bg-primary/10 text-primary"
-                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                ? "bg-primary/10 text-primary"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 }`}
                         >
                             {item.icon}
@@ -173,5 +200,11 @@ export function TeacherSidebar() {
                 </Link>
             </div>
         </div>
+    );
+}
+
+export function TeacherSidebar() {
+    return (
+        <TeacherSidebarContent className="w-64 border-r border-border h-screen fixed left-0 top-0 hidden md:flex" />
     );
 }

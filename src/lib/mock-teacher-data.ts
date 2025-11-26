@@ -6,7 +6,10 @@ export interface ExamResult {
     nisn: string;
     examId: string;
     examTitle: string;
-    score: number;
+    score: number; // This will be the final effective score
+    originalScore: number; // The auto-graded score
+    manualAdjustment: number;
+    bonusPoints: number;
     maxScore: number;
     percentage: number;
     duration: number; // in seconds
@@ -15,6 +18,9 @@ export interface ExamResult {
     submittedAt: Date;
     answers: Record<number, string>;
     isPublished: boolean;
+    adjustmentReason?: string;
+    adjustedBy?: string;
+    adjustedAt?: Date;
 }
 
 export interface Violation {
@@ -25,6 +31,13 @@ export interface Violation {
     examTitle: string;
     type: "tab_switch" | "right_click" | "copy_paste";
     timestamp: Date;
+    status: "pending" | "verified" | "dismissed";
+    evidence?: {
+        duration?: number; // seconds
+        content?: string; // for copy/paste
+        screen_captured?: string; // url
+    };
+    teacherNotes?: string;
     metadata?: any;
 }
 
@@ -38,6 +51,9 @@ export const mockExamResults: ExamResult[] = [
         examId: "MTK-2024-A1",
         examTitle: "Matematika Wajib - Semester 1",
         score: 85,
+        originalScore: 85,
+        manualAdjustment: 0,
+        bonusPoints: 0,
         maxScore: 100,
         percentage: 85,
         duration: 4200, // 70 minutes
@@ -54,15 +70,21 @@ export const mockExamResults: ExamResult[] = [
         nisn: "987654321",
         examId: "MTK-2024-A1",
         examTitle: "Matematika Wajib - Semester 1",
-        score: 92,
+        score: 95, // Adjusted from 92
+        originalScore: 92,
+        manualAdjustment: 0,
+        bonusPoints: 3,
         maxScore: 100,
-        percentage: 92,
+        percentage: 95,
         duration: 3900,
         violations: 0,
         status: "completed",
         submittedAt: new Date("2024-11-20T10:25:00"),
         answers: { 0: "A", 1: "B", 2: "C" },
         isPublished: true,
+        adjustmentReason: "Bonus keaktifan di kelas",
+        adjustedBy: "Pak Guru",
+        adjustedAt: new Date("2024-11-21T08:00:00"),
     },
     {
         id: "res-003",
@@ -72,6 +94,9 @@ export const mockExamResults: ExamResult[] = [
         examId: "MTK-2024-A1",
         examTitle: "Matematika Wajib - Semester 1",
         score: 78,
+        originalScore: 78,
+        manualAdjustment: 0,
+        bonusPoints: 0,
         maxScore: 100,
         percentage: 78,
         duration: 4500,
@@ -89,6 +114,9 @@ export const mockExamResults: ExamResult[] = [
         examId: "FIS-2024-B1",
         examTitle: "Fisika - Quiz Hukum Newton",
         score: 65,
+        originalScore: 65,
+        manualAdjustment: 0,
+        bonusPoints: 0,
         maxScore: 100,
         percentage: 65,
         duration: 2700,
@@ -105,15 +133,21 @@ export const mockExamResults: ExamResult[] = [
         nisn: "789123456",
         examId: "FIS-2024-B1",
         examTitle: "Fisika - Quiz Hukum Newton",
-        score: 42,
+        score: 32, // Adjusted from 42 (-10 penalty)
+        originalScore: 42,
+        manualAdjustment: -10,
+        bonusPoints: 0,
         maxScore: 100,
-        percentage: 42,
+        percentage: 32,
         duration: 3000,
         violations: 5,
         status: "completed",
         submittedAt: new Date("2024-11-21T14:20:00"),
         answers: { 0: "A", 1: "A", 2: "A" },
         isPublished: false,
+        adjustmentReason: "Pengurangan nilai karena pelanggaran berat",
+        adjustedBy: "Pak Guru",
+        adjustedAt: new Date("2024-11-21T15:00:00"),
     },
 ];
 
@@ -127,6 +161,8 @@ export const mockViolations: Violation[] = [
         examTitle: "Matematika Wajib - Semester 1",
         type: "tab_switch",
         timestamp: new Date("2024-11-20T10:15:00"),
+        status: "pending",
+        evidence: { duration: 15 },
     },
     {
         id: "vio-002",
@@ -136,6 +172,9 @@ export const mockViolations: Violation[] = [
         examTitle: "Matematika Wajib - Semester 1",
         type: "tab_switch",
         timestamp: new Date("2024-11-20T10:20:00"),
+        status: "verified",
+        evidence: { duration: 45 },
+        teacherNotes: "Siswa mengakui membuka google",
     },
     {
         id: "vio-003",
@@ -143,8 +182,10 @@ export const mockViolations: Violation[] = [
         studentName: "Cahya Prasetyo",
         examId: "MTK-2024-A1",
         examTitle: "Matematika Wajib - Semester 1",
-        type: "tab_switch",
+        type: "copy_paste",
         timestamp: new Date("2024-11-20T10:28:00"),
+        status: "pending",
+        evidence: { content: "Rumus Pythagoras adalah a^2 + b^2 = c^2" },
     },
     {
         id: "vio-004",
@@ -154,6 +195,9 @@ export const mockViolations: Violation[] = [
         examTitle: "Fisika - Quiz Hukum Newton",
         type: "tab_switch",
         timestamp: new Date("2024-11-21T14:05:00"),
+        status: "dismissed",
+        evidence: { duration: 2 },
+        teacherNotes: "Terpencet tidak sengaja",
     },
     {
         id: "vio-005",
@@ -161,8 +205,9 @@ export const mockViolations: Violation[] = [
         studentName: "Eko Prasetyo",
         examId: "FIS-2024-B1",
         examTitle: "Fisika - Quiz Hukum Newton",
-        type: "tab_switch",
+        type: "right_click",
         timestamp: new Date("2024-11-21T14:10:00"),
+        status: "pending",
     },
     {
         id: "vio-006",
@@ -172,6 +217,8 @@ export const mockViolations: Violation[] = [
         examTitle: "Fisika - Quiz Hukum Newton",
         type: "tab_switch",
         timestamp: new Date("2024-11-21T14:12:00"),
+        status: "pending",
+        evidence: { duration: 120 },
     },
     {
         id: "vio-007",
@@ -181,6 +228,8 @@ export const mockViolations: Violation[] = [
         examTitle: "Fisika - Quiz Hukum Newton",
         type: "tab_switch",
         timestamp: new Date("2024-11-21T14:15:00"),
+        status: "pending",
+        evidence: { duration: 30 },
     },
     {
         id: "vio-008",
@@ -190,6 +239,8 @@ export const mockViolations: Violation[] = [
         examTitle: "Fisika - Quiz Hukum Newton",
         type: "tab_switch",
         timestamp: new Date("2024-11-21T14:18:00"),
+        status: "pending",
+        evidence: { duration: 10 },
     },
 ];
 
