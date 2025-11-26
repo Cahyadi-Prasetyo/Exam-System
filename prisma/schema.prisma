@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  examAttempts ExamAttempt[]
+}
+
+model Exam {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  duration    Int      // in minutes
+  startTime   DateTime
+  endTime     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  questions    Question[]
+  examAttempts ExamAttempt[]
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  examId    String
+  text      String   @db.Text
+  type      String   @default("MULTIPLE_CHOICE") // MULTIPLE_CHOICE, ESSAY
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  exam    Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  options Option[]
+  answers Answer[]
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  isCorrect  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model ExamAttempt {
+  id        String    @id @default(cuid())
+  userId    String
+  examId    String
+  startTime DateTime  @default(now())
+  endTime   DateTime?
+  score     Float?
+  status    String    @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, SUBMITTED
+  
+  // Grade Management
+  originalScore    Float?
+  manualAdjustment Float     @default(0)
+  bonusPoints      Float     @default(0)
+  adjustmentReason String?
+  isPublished      Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam       Exam        @relation(fields: [examId], references: [id], onDelete: Cascade)
+  answers    Answer[]
+  violations Violation[]
+}
+
+model Answer {
+  id            String   @id @default(cuid())
+  examAttemptId String
+  questionId    String
+  answerText    String?  // For essay or selected option ID
+  isCorrect     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  examAttempt ExamAttempt @relation(fields: [examAttemptId], references: [id], onDelete: Cascade)
+  question    Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Violation {
+  id            String   @id @default(cuid())
+  examAttemptId String
+  type          String   // TAB_SWITCH, FULLSCREEN_EXIT, etc.
+  timestamp     DateTime @default(now())
+  details       String?
+  status        String   @default("OPEN") // OPEN, REVIEWED, DISMISSED
+  adminNotes    String?
+  
+  // Relations
+  examAttempt ExamAttempt @relation(fields: [examAttemptId], references: [id], onDelete: Cascade)
+}

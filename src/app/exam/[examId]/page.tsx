@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useSwipeGesture } from "@/hooks/useSwipeGesture";
+import { KeyboardShortcutsModal } from "@/components/ui/keyboard-shortcuts-modal";
+import { ConnectionBanner } from "@/components/ui/connection-banner";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 
 // Mock data - nanti dari API
 const mockExamData = {
@@ -37,67 +43,10 @@ export default function ExamPage() {
     const [showWarningModal, setShowWarningModal] = useState(false);
     const [violations, setViolations] = useState(0);
 
-    // Timer countdown
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setTimeRemaining((prev) => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    handleAutoSubmit();
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, []);
-
-    // Tab switch detection
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                setViolations((prev) => prev + 1);
-                setShowWarningModal(true);
-
-                if (violations + 1 >= 5) {
-                    handleAutoSubmit();
-                }
-            }
-        };
-
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-    }, [violations]);
-
-    // Auto-save answers
-    useEffect(() => {
-        const autoSave = setInterval(() => {
-            // Auto-save logic here
-            console.log("Auto-saving answers...", answers);
-        }, 30000); // Every 30 seconds
-
-        return () => clearInterval(autoSave);
-    }, [answers]);
-
-    const handleAutoSubmit = useCallback(() => {
-        console.log("Auto-submitting exam...");
-        router.push(`/exam/result/${examId}`);
-    }, [examId, router]);
-
-    const formatTime = (seconds: number) => {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    };
-
-    const getTimerColor = () => {
-        if (timeRemaining <= 60) return "text-red-600"; // 1 min
-        if (timeRemaining <= 300) return "text-orange-600"; // 5 min
-        if (timeRemaining <= 900) return "text-yellow-600"; // 15 min
-        return "text-foreground";
-    };
+    // Phase 4 States
+    const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+    const { isOnline, wasOffline } = useOnlineStatus();
 
     const handleAnswerSelect = (optionId: string) => {
         setAnswers((prev) => ({
@@ -130,22 +79,99 @@ export default function ExamPage() {
         }
     };
 
+    const handleSubmit = useCallback(() => {
+        console.log("Submitting exam...", { answers, violations });
+        router.push(`/teacher/results`); // Redirect to results for demo
+    }, [answers, violations, router]);
+
+    const handleAutoSubmit = useCallback(() => {
+        console.log("Auto-submitting exam...");
+        handleSubmit();
+    }, [handleSubmit]);
+
     const handleSubmitClick = () => {
         const answeredCount = Object.keys(answers).length;
         const unansweredCount = mockExamData.questions.length - answeredCount;
 
         if (unansweredCount > 0) {
-            // Show warning modal
             setShowSubmitModal(true);
         } else {
-            // Submit directly
             handleSubmit();
         }
     };
 
-    const handleSubmit = () => {
-        console.log("Submitting exam...", { answers, violations });
-        router.push(`/exam/result/${examId}`);
+    // Keyboard Shortcuts
+    useKeyboardShortcuts({
+        onAnswerSelect: (optionId) => handleAnswerSelect(optionId),
+        onNext: handleNext,
+        onPrevious: handlePrevious,
+        onToggleFlag: toggleFlag,
+        onShowHelp: () => setIsShortcutsModalOpen(true),
+        currentQuestion,
+        totalQuestions: mockExamData.questions.length,
+        optionsCount: mockExamData.questions[currentQuestion].options.length,
+    });
+
+    // Swipe Gestures
+    const swipeHandlers = useSwipeGesture({
+        onSwipeLeft: handleNext,
+        onSwipeRight: handlePrevious,
+    });
+
+    // Timer countdown
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeRemaining((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    handleAutoSubmit();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [handleAutoSubmit]);
+
+    // Tab switch detection
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setViolations((prev) => prev + 1);
+                setShowWarningModal(true);
+
+                if (violations + 1 >= 5) {
+                    handleAutoSubmit();
+                }
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, [violations, handleAutoSubmit]);
+
+    // Auto-save answers
+    useEffect(() => {
+        const autoSave = setInterval(() => {
+            console.log("Auto-saving answers...", answers);
+        }, 30000); // Every 30 seconds
+
+        return () => clearInterval(autoSave);
+    }, [answers]);
+
+    const formatTime = (seconds: number) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    };
+
+    const getTimerColor = () => {
+        if (timeRemaining <= 60) return "text-red-600"; // 1 min
+        if (timeRemaining <= 300) return "text-orange-600"; // 5 min
+        if (timeRemaining <= 900) return "text-yellow-600"; // 15 min
+        return "text-foreground";
     };
 
     const answeredCount = Object.keys(answers).length;
@@ -153,7 +179,9 @@ export default function ExamPage() {
     const question = mockExamData.questions[currentQuestion];
 
     return (
-        <div className="min-h-screen bg-muted/20">
+        <div className="min-h-screen bg-muted/20" {...swipeHandlers}>
+            <ConnectionBanner isOnline={isOnline} wasOffline={wasOffline} />
+
             {/* Top Bar */}
             <div className="bg-background border-b border-border sticky top-0 z-10">
                 <div className="container mx-auto px-4 py-3">
@@ -171,6 +199,26 @@ export default function ExamPage() {
                                     {formatTime(timeRemaining)}
                                 </p>
                             </div>
+                            {/* Mobile Nav Toggle */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="lg:hidden"
+                                onClick={() => setIsMobileNavOpen(true)}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </Button>
                         </div>
                     </div>
                     <div className="mt-3">
@@ -285,8 +333,8 @@ export default function ExamPage() {
                         </div>
                     </div>
 
-                    {/* Navigation Sidebar (40%) */}
-                    <div className="space-y-4">
+                    {/* Navigation Sidebar (Desktop) */}
+                    <div className="hidden lg:block space-y-4">
                         <Card className="p-4">
                             <h3 className="font-semibold mb-3">Navigasi Soal</h3>
 
@@ -367,6 +415,89 @@ export default function ExamPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Navigation Bottom Sheet */}
+            <BottomSheet
+                isOpen={isMobileNavOpen}
+                onClose={() => setIsMobileNavOpen(false)}
+                title="Navigasi Soal"
+            >
+                <div className="space-y-4">
+                    {/* Summary Stats */}
+                    <div className="grid grid-cols-3 gap-2 mb-4 text-center">
+                        <div className="p-2 rounded bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900">
+                            <p className="text-2xl font-bold text-green-600">{answeredCount}</p>
+                            <p className="text-xs text-muted-foreground">Terjawab</p>
+                        </div>
+                        <div className="p-2 rounded bg-gray-50 dark:bg-gray-950/20 border border-gray-200 dark:border-gray-900">
+                            <p className="text-2xl font-bold text-gray-600">
+                                {mockExamData.questions.length - answeredCount}
+                            </p>
+                            <p className="text-xs text-muted-foreground">Kosong</p>
+                        </div>
+                        <div className="p-2 rounded bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900">
+                            <p className="text-2xl font-bold text-red-600">{flagged.size}</p>
+                            <p className="text-xs text-muted-foreground">Ditandai</p>
+                        </div>
+                    </div>
+
+                    {/* Question Grid */}
+                    <div className="grid grid-cols-5 gap-2">
+                        {mockExamData.questions.map((_, index) => {
+                            const isAnswered = answers[index] !== undefined;
+                            const isFlagged = flagged.has(index);
+                            const isCurrent = currentQuestion === index;
+
+                            return (
+                                <button
+                                    key={index}
+                                    onClick={() => {
+                                        setCurrentQuestion(index);
+                                        setIsMobileNavOpen(false);
+                                    }}
+                                    className={`h-12 rounded-lg border-2 font-semibold transition-all relative ${isCurrent
+                                        ? "border-primary bg-primary text-primary-foreground"
+                                        : isAnswered
+                                            ? "border-green-500 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400"
+                                            : "border-border bg-background hover:border-primary/50"
+                                        }`}
+                                >
+                                    {index + 1}
+                                    {isFlagged && (
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-3 w-3 absolute top-1 right-1 text-red-500"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" />
+                                        </svg>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Submit Button */}
+                    <Button
+                        onClick={() => {
+                            setIsMobileNavOpen(false);
+                            handleSubmitClick();
+                        }}
+                        className="w-full mt-4"
+                        size="lg"
+                        variant="destructive"
+                    >
+                        Kumpulkan Ujian
+                    </Button>
+                </div>
+            </BottomSheet>
+
+            {/* Keyboard Shortcuts Modal */}
+            <KeyboardShortcutsModal
+                isOpen={isShortcutsModalOpen}
+                onClose={() => setIsShortcutsModalOpen(false)}
+            />
 
             {/* Submit Confirmation Modal */}
             <Modal
