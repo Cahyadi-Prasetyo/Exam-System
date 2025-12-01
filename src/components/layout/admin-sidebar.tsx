@@ -83,8 +83,8 @@ export function AdminSidebarContent({ onClose }: AdminSidebarContentProps) {
                             href={item.href}
                             onClick={onClose}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                                    ? "bg-primary text-primary-foreground"
-                                    : "hover:bg-accent"
+                                ? "bg-primary text-primary-foreground"
+                                : "hover:bg-accent"
                                 }`}
                         >
                             {item.icon}
@@ -93,19 +93,6 @@ export function AdminSidebarContent({ onClose }: AdminSidebarContentProps) {
                     );
                 })}
             </nav>
-
-            {/* User Profile */}
-            <div className="p-4 border-t border-border">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-accent">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
-                        A
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">Admin User</p>
-                        <p className="text-sm text-muted-foreground">Administrator</p>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }

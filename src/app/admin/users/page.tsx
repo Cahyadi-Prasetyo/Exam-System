@@ -60,8 +60,8 @@ export default function UsersPage() {
             cell: (user: User) => (
                 <span
                     className={`px-2 py-1 rounded text-xs font-semibold ${user.role === "TEACHER"
-                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                            : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                        : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                         }`}
                 >
                     {user.role === "TEACHER" ? "Guru" : "Siswa"}
@@ -74,8 +74,8 @@ export default function UsersPage() {
             cell: (user: User) => (
                 <span
                     className={`px-2 py-1 rounded text-xs font-semibold ${user.status === "active"
-                            ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                            : "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                        : "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300"
                         }`}
                 >
                     {user.status === "active" ? "Aktif" : "Nonaktif"}
@@ -153,7 +153,7 @@ export default function UsersPage() {
                         <Button
                             key={role}
                             size="sm"
-                            variant={filterRole === role ? "primary" : "outline"}
+                            variant={filterRole === role ? "default" : "outline"}
                             onClick={() => setFilterRole(role)}
                         >
                             {role === "ALL" ? "Semua" : role === "STUDENT" ? "Siswa" : "Guru"}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AdminSidebar, AdminSidebarContent } from "@/components/layout/admin-sidebar";
 import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/layout/navbar";
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -19,36 +20,41 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
             </Sheet>
 
             {/* Main Content */}
-            <div className="lg:pl-64">
-                {/* Mobile Header */}
-                <div className="lg:hidden sticky top-0 z-10 bg-background border-b border-border px-4 py-3">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="font-bold text-lg">Exam System</h1>
-                            <p className="text-xs text-muted-foreground">Admin Panel</p>
-                        </div>
+            <div className="lg:pl-64 flex flex-col min-h-screen">
+                {/* Navbar with Mobile Trigger */}
+                <div className="sticky top-0 z-30 bg-white border-b px-6 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                         <Button
-                            variant="outline"
-                            size="sm"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => setIsSidebarOpen(true)}
+                            className="lg:hidden -ml-2"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
                             >
                                 <path
-                                    fillRule="evenodd"
-                                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                                    clipRule="evenodd"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 6h16M4 12h16M4 18h16"
                                 />
                             </svg>
                         </Button>
                     </div>
+
+                    <div className="flex items-center gap-4">
+                        <Navbar user={{ name: "Admin User", role: "Administrator", email: "admin@exam.com" }} />
+                    </div>
                 </div>
 
-                {children}
+                <div className="flex-1">
+                    {children}
+                </div>
             </div>
         </div>
     );

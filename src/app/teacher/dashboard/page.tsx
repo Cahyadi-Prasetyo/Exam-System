@@ -3,6 +3,7 @@
 import { StatCard } from "@/components/ui/stat-card";
 import { mockExamResults } from "@/lib/mock-teacher-data";
 import { useRouter } from "next/navigation";
+import { BookOpen, Users, AlertTriangle, TrendingUp, Plus, FileText, ShieldAlert, ChevronRight } from "lucide-react";
 
 export default function TeacherDashboard() {
     const router = useRouter();
@@ -15,196 +16,128 @@ export default function TeacherDashboard() {
     const totalViolations = mockExamResults.reduce((sum, r) => sum + r.violations, 0);
 
     return (
-        <div className="p-4 md:p-8">
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard Guru</h1>
-                <p className="text-sm md:text-base text-muted-foreground mt-2">
-                    Selamat datang kembali, Pak Budi. Berikut ringkasan aktivitas ujian.
-                </p>
+        <div className="min-h-screen bg-indigo-50 p-6 md:p-8 space-y-8">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Dashboard Guru</h1>
+                    <p className="text-gray-500 mt-1">
+                        Selamat datang kembali, Pak Budi. Berikut ringkasan aktivitas ujian hari ini.
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+                        Semester Ganjil 2024/2025
+                    </span>
+                </div>
             </div>
 
-            {/* Main Content */}
-            <div className="space-y-8">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                    <StatCard
-                        title="Total Ujian"
-                        value={totalExams}
-                        color="blue"
-                        icon={
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                />
-                            </svg>
-                        }
-                    />
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard
+                    title="Total Ujian"
+                    value={totalExams}
+                    color="blue"
+                    icon={<BookOpen className="w-6 h-6" />}
+                    subtitle="Ujian aktif"
+                />
 
-                    <StatCard
-                        title="Rata-rata Nilai"
-                        value={`${averageScore.toFixed(1)}%`}
-                        color="green"
-                        trend={{ value: 5.2, isPositive: true }}
-                        icon={
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 00 2-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                                />
-                            </svg>
-                        }
-                    />
+                <StatCard
+                    title="Rata-rata Nilai"
+                    value={`${averageScore.toFixed(1)}%`}
+                    color="green"
+                    trend={{ value: 5.2, isPositive: true }}
+                    icon={<TrendingUp className="w-6 h-6" />}
+                    subtitle="Peningkatan"
+                />
 
-                    <StatCard
-                        title="Total Siswa"
-                        value={totalStudents}
-                        color="blue"
-                        icon={
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                                />
-                            </svg>
-                        }
-                    />
+                <StatCard
+                    title="Total Siswa"
+                    value={totalStudents}
+                    color="blue"
+                    icon={<Users className="w-6 h-6" />}
+                    subtitle="Mengikuti ujian"
+                />
 
-                    <StatCard
-                        title="Total Pelanggaran"
-                        value={totalViolations}
-                        color="red"
-                        trend={{ value: 12.5, isPositive: false }}
-                        icon={
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                />
-                            </svg>
-                        }
-                    />
-                </div>
+                <StatCard
+                    title="Total Pelanggaran"
+                    value={totalViolations}
+                    color="red"
+                    trend={{ value: 12.5, isPositive: false }}
+                    icon={<AlertTriangle className="w-6 h-6" />}
+                    subtitle="Perlu ditinjau"
+                />
+            </div>
 
-                {/* Quick Actions */}
+            {/* Quick Actions Section */}
+            <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
+                    Aksi Cepat
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <button
-                        onClick={() => router.push("/teacher/results")}
-                        className="bg-background rounded-lg p-6 hover:bg-muted/50 transition-colors text-left shadow-sm"
+                        onClick={() => router.push("/teacher/exams/create")}
+                        className="group bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all text-left relative overflow-hidden"
                     >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6 text-blue-600"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                    />
-                                </svg>
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Plus className="w-24 h-24 text-blue-600 -mr-8 -mt-8" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <Plus className="w-6 h-6 text-blue-600" />
                             </div>
-                            <div>
-                                <h3 className="font-semibold">Lihat Hasil Ujian</h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Tinjau nilai dan performa siswa
-                                </p>
+                            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">Buat Ujian Baru</h3>
+                            <p className="text-sm text-gray-500">Buat jadwal dan soal ujian baru untuk siswa</p>
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={() => router.push("/teacher/results")}
+                        className="group bg-white p-6 rounded-xl border border-gray-200 hover:border-indigo-500 hover:shadow-md transition-all text-left relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <FileText className="w-24 h-24 text-indigo-600 -mr-8 -mt-8" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <FileText className="w-6 h-6 text-indigo-600" />
                             </div>
+                            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">Lihat Hasil Ujian</h3>
+                            <p className="text-sm text-gray-500">Analisis nilai dan performa siswa secara detail</p>
                         </div>
                     </button>
 
                     <button
                         onClick={() => router.push("/teacher/violations")}
-                        className="bg-background rounded-lg p-6 hover:bg-muted/50 transition-colors text-left shadow-sm"
+                        className="group bg-white p-6 rounded-xl border border-gray-200 hover:border-red-500 hover:shadow-md transition-all text-left relative overflow-hidden"
                     >
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6 text-red-600"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                    />
-                                </svg>
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <ShieldAlert className="w-24 h-24 text-red-600 -mr-8 -mt-8" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <ShieldAlert className="w-6 h-6 text-red-600" />
                             </div>
-                            <div>
-                                <h3 className="font-semibold">Tinjau Pelanggaran</h3>
-                                <p className="text-sm text-muted-foreground">
-                                    {totalViolations} pelanggaran perlu ditinjau
-                                </p>
-                            </div>
+                            <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-red-600 transition-colors">Tinjau Pelanggaran</h3>
+                            <p className="text-sm text-gray-500">
+                                <span className="text-red-600 font-medium">{totalViolations} pelanggaran</span> memerlukan tindakan Anda
+                            </p>
                         </div>
                     </button>
+                </div>
+            </div>
 
-                    <button className="bg-background rounded-lg p-6 hover:bg-muted/50 transition-colors text-left shadow-sm">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6 text-green-600"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                                    />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold">Buat Ujian Baru</h3>
-                                <p className="text-sm text-muted-foreground">Tambah ujian baru</p>
-                            </div>
-                        </div>
+            {/* Recent Activity Placeholder (Optional for future) */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-semibold text-gray-900">Aktivitas Terbaru</h2>
+                    <button className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                        Lihat Semua <ChevronRight className="w-4 h-4" />
                     </button>
+                </div>
+                <div className="text-center py-12 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                    <p>Belum ada aktivitas ujian terbaru hari ini.</p>
                 </div>
             </div>
         </div>

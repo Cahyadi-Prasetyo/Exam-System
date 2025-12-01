@@ -103,7 +103,7 @@ export default function ExamReviewPage() {
                         {/* Filter Tabs */}
                         <div className="flex gap-2 flex-wrap">
                             <Button
-                                variant={filterMode === "all" ? "primary" : "ghost"}
+                                variant={filterMode === "all" ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => {
                                     setFilterMode("all");
@@ -113,7 +113,7 @@ export default function ExamReviewPage() {
                                 Semua ({mockReviewData.questions.length})
                             </Button>
                             <Button
-                                variant={filterMode === "wrong" ? "primary" : "ghost"}
+                                variant={filterMode === "wrong" ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => {
                                     setFilterMode("wrong");
@@ -129,7 +129,7 @@ export default function ExamReviewPage() {
                                 )
                             </Button>
                             <Button
-                                variant={filterMode === "unanswered" ? "primary" : "ghost"}
+                                variant={filterMode === "unanswered" ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => {
                                     setFilterMode("unanswered");
@@ -225,10 +225,10 @@ export default function ExamReviewPage() {
                                             <div className="flex items-center gap-3">
                                                 <div
                                                     className={`h-6 w-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isCorrectOption
-                                                            ? "border-green-500 bg-green-500 text-white"
-                                                            : isUserAnswer && !isCorrect
-                                                                ? "border-red-500 bg-red-500 text-white"
-                                                                : "border-border"
+                                                        ? "border-green-500 bg-green-500 text-white"
+                                                        : isUserAnswer && !isCorrect
+                                                            ? "border-red-500 bg-red-500 text-white"
+                                                            : "border-border"
                                                         }`}
                                                 >
                                                     <span className="text-sm font-semibold">{option.id}</span>
@@ -356,12 +356,12 @@ export default function ExamReviewPage() {
                                             key={q.id}
                                             onClick={() => setCurrentQuestion(index)}
                                             className={`h-10 rounded-lg border-2 font-semibold text-sm transition-all ${isCurrent
-                                                    ? "border-primary bg-primary text-primary-foreground"
-                                                    : isUnansweredQ
-                                                        ? "border-gray-300 bg-gray-50 dark:bg-gray-950/20 text-gray-600"
-                                                        : isCorrectQ
-                                                            ? "border-green-500 bg-green-50 dark:bg-green-950/20 text-green-700"
-                                                            : "border-red-500 bg-red-50 dark:bg-red-950/20 text-red-700"
+                                                ? "border-primary bg-primary text-primary-foreground"
+                                                : isUnansweredQ
+                                                    ? "border-gray-300 bg-gray-50 dark:bg-gray-950/20 text-gray-600"
+                                                    : isCorrectQ
+                                                        ? "border-green-500 bg-green-50 dark:bg-green-950/20 text-green-700"
+                                                        : "border-red-500 bg-red-50 dark:bg-red-950/20 text-red-700"
                                                 }`}
                                         >
                                             {q.id}

@@ -95,7 +95,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                                 <Button
                                     onClick={this.handleReset}
                                     className="w-full"
-                                    variant="primary"
+                                    variant="default"
                                 >
                                     Coba Lagi
                                 </Button>

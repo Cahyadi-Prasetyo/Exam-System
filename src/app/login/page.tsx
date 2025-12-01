@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { BookOpen, School } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -30,7 +31,6 @@ export default function LoginPage() {
                 return;
             }
 
-            // Redirect based on role (will be handled by middleware)
             router.push("/");
             router.refresh();
         } catch (err) {
@@ -40,36 +40,29 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-            <div className="w-full max-w-md p-8">
-                {/* Logo & Title */}
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-8 w-8 text-white"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+            <div className="w-full max-w-[400px] space-y-6">
+                {/* Header Section */}
+                <div className="flex flex-col items-center text-center space-y-2">
+                    <div className="p-3 bg-blue-600 rounded-xl shadow-sm">
+                        <School className="w-8 h-8 text-white" />
                     </div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        Exam System
+                    <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                        Sistem Ujian Online
                     </h1>
-                    <p className="text-muted-foreground mt-2">Masuk ke akun Anda</p>
+                    <p className="text-sm text-gray-500">
+                        Silakan masuk untuk melanjutkan
+                    </p>
                 </div>
 
-                {/* Login Form */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Email */}
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium mb-2">
+                {/* Main Card */}
+                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="space-y-2">
+                            <label
+                                htmlFor="email"
+                                className="text-sm font-medium text-gray-700"
+                            >
                                 Email
                             </label>
                             <input
@@ -78,64 +71,71 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
-                                placeholder="user@example.com"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent"
+                                placeholder="nama@sekolah.sch.id"
                             />
                         </div>
 
-                        {/* Password */}
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium mb-2">
-                                Password
-                            </label>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <label
+                                    htmlFor="password"
+                                    className="text-sm font-medium text-gray-700"
+                                >
+                                    Password
+                                </label>
+                            </div>
                             <input
                                 id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent"
                                 placeholder="••••••••"
                             />
                         </div>
 
-                        {/* Error Message */}
                         {error && (
-                            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg">
+                                {error}
                             </div>
                         )}
 
-                        {/* Submit Button */}
                         <Button
                             type="submit"
-                            className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors"
                             isLoading={isLoading}
                         >
                             Masuk
                         </Button>
                     </form>
+                </div>
 
-                    {/* Demo Accounts */}
-                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <p className="text-xs text-muted-foreground mb-3">Akun Demo:</p>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
-                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                                <p className="font-semibold text-blue-700 dark:text-blue-400">Admin</p>
-                                <p className="text-blue-600 dark:text-blue-500 mt-1">admin@exam.com</p>
-                            </div>
-                            <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                                <p className="font-semibold text-green-700 dark:text-green-400">Guru</p>
-                                <p className="text-green-600 dark:text-green-500 mt-1">teacher@exam.com</p>
-                            </div>
-                            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-800">
-                                <p className="font-semibold text-purple-700 dark:text-purple-400">Siswa</p>
-                                <p className="text-purple-600 dark:text-purple-500 mt-1">student@exam.com</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2 text-center">
-                            Password: <span className="font-mono font-semibold">password123</span>
-                        </p>
+                {/* Demo Accounts Helper */}
+                <div className="text-center">
+                    <p className="text-xs text-gray-500 mb-4">
+                        Akun Demo (Klik untuk copy)
+                    </p>
+                    <div className="flex justify-center gap-3 text-xs">
+                        <button
+                            onClick={() => { setEmail("admin@exam.com"); setPassword("password123"); }}
+                            className="px-3 py-1.5 bg-white border border-gray-200 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors"
+                        >
+                            Admin
+                        </button>
+                        <button
+                            onClick={() => { setEmail("teacher@exam.com"); setPassword("password123"); }}
+                            className="px-3 py-1.5 bg-white border border-gray-200 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors"
+                        >
+                            Guru
+                        </button>
+                        <button
+                            onClick={() => { setEmail("student@exam.com"); setPassword("password123"); }}
+                            className="px-3 py-1.5 bg-white border border-gray-200 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors"
+                        >
+                            Siswa
+                        </button>
                     </div>
                 </div>
             </div>
