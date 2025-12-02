@@ -50,10 +50,12 @@ export async function createExam(prevState: any, formData: FormData) {
         });
 
         revalidatePath("/teacher/dashboard");
+        redirect(`/teacher/exams/${newExam.id}/edit`);
     } catch (error) {
+        if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+            throw error;
+        }
         console.error("Failed to create exam:", error);
         return { error: "Gagal membuat ujian. Silakan coba lagi." };
     }
-
-    redirect("/teacher/dashboard");
 }

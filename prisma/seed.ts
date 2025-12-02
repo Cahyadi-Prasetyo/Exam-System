@@ -6,6 +6,9 @@ const prisma = new PrismaClient();
 async function main() {
     const hashedPassword = await bcrypt.hash("password123", 10);
 
+    // Clear existing data (Optional, based on user request)
+    await prisma.exam.deleteMany({});
+
     // Create Admin
     const admin = await prisma.user.upsert({
         where: { email: "admin@exam.com" },
