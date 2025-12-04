@@ -59,3 +59,65 @@ export async function createExam(prevState: any, formData: FormData) {
         return { error: "Gagal membuat ujian. Silakan coba lagi." };
     }
 }
+
+function generateToken(length: number = 6): string {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let token = "";
+    for (let i = 0; i < length; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return token;
+}
+
+export async function publishExam(examId: string) {
+    const session = await auth();
+    if (!session || session.user.role !== "TEACHER") {
+        return { error: "Unauthorized" };
+    }
+
+    try {
+        const exam = await prisma.exam.findUnique({
+            where: { id: examId },
+            select: { token: true }
+        });
+
+        if (!exam) return { error: "Exam not found" };
+
+        const token = exam.token || generateToken();
+
+        await prisma.exam.update({
+            where: { id: examId },
+            data: {
+                status: "PUBLISHED",
+                token: token
+            }
+        });
+
+        revalidatePath(`/teacher/exams/${examId}/edit`);
+        return { success: true, token };
+    } catch (error) {
+        console.error("Failed to publish exam:", error);
+        return { error: "Failed to publish exam" };
+    }
+}
+
+export async function regenerateToken(examId: string) {
+    const session = await auth();
+    if (!session || session.user.role !== "TEACHER") {
+        return { error: "Unauthorized" };
+    }
+
+    try {
+        const token = generateToken();
+        await prisma.exam.update({
+            where: { id: examId },
+            data: { token }
+        });
+
+        revalidatePath(`/teacher/exams/${examId}/edit`);
+        return { success: true, token };
+    } catch (error) {
+        console.error("Failed to regenerate token:", error);
+        return { error: "Failed to regenerate token" };
+    }
+}

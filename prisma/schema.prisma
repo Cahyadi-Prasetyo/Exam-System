@@ -37,6 +37,8 @@ model Exam {
   duration    Int      // in minutes
   startTime   DateTime
   endTime     DateTime
+  status      String   @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  token       String?  @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -110,6 +112,8 @@ model Answer {
   // Relations
   examAttempt ExamAttempt @relation(fields: [examAttemptId], references: [id], onDelete: Cascade)
   question    Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([examAttemptId, questionId])
 }
 
 model Violation {
