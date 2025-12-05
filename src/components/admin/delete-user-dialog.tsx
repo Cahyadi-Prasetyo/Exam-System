@@ -1,43 +1,85 @@
 "use client";
 
-import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
-import type { User } from "@/lib/mock-admin-data";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { User } from "@/types";
+import { deleteUser } from "@/actions/admin-actions";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface DeleteUserDialogProps {
     isOpen: boolean;
     onClose: () => void;
+    onSuccess: () => void;
     user: User | null;
 }
 
-export function DeleteUserDialog({ isOpen, onClose, user }: DeleteUserDialogProps) {
-    const handleDelete = () => {
-        // TODO: Implement delete user logic
-        console.log("Deleting user:", user?.id);
-        onClose();
+export function DeleteUserDialog({ isOpen, onClose, onSuccess, user }: DeleteUserDialogProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
+
+    const handleDelete = async () => {
+        if (!user) return;
+        setIsLoading(true);
+
+        try {
+            const res = await deleteUser(user.id);
+            if (res.success) {
+                onSuccess();
+            } else {
+                toast({
+                    title: "Gagal Menghapus User",
+                    description: res.error || "Terjadi kesalahan.",
+                    variant: "destructive",
+                });
+            }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Terjadi kesalahan jaringan.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (!user) return null;
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Hapus User">
-            <div className="space-y-4">
-                <p>
-                    Apakah Anda yakin ingin menghapus user <span className="font-bold">{user.name}</span> ({user.role})?
-                </p>
-                <p className="text-sm text-muted-foreground">
-                    Tindakan ini tidak dapat dibatalkan. Semua data terkait user ini akan dihapus.
-                </p>
-
-                <div className="flex gap-3 pt-4">
-                    <Button variant="ghost" onClick={onClose} className="flex-1">
-                        Batal
-                    </Button>
-                    <Button variant="destructive" onClick={handleDelete} className="flex-1">
+        <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Hapus User?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Apakah Anda yakin ingin menghapus user <strong>{user.name}</strong>?
+                        Tindakan ini tidak dapat dibatalkan.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isLoading}>Batal</AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleDelete();
+                        }}
+                        className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                        disabled={isLoading}
+                    >
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Hapus
-                    </Button>
-                </div>
-            </div>
-        </Modal>
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }

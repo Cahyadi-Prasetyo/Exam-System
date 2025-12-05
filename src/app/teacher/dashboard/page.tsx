@@ -1,19 +1,31 @@
 "use client";
 
 import { StatCard } from "@/components/ui/stat-card";
-import { mockExamResults } from "@/lib/mock-teacher-data";
 import { useRouter } from "next/navigation";
 import { BookOpen, Users, AlertTriangle, TrendingUp, Plus, FileText, ShieldAlert, ChevronRight } from "lucide-react";
+import { getTeacherDashboardStats } from "@/actions/teacher-actions";
+import { useEffect, useState } from "react";
 
 export default function TeacherDashboard() {
     const router = useRouter();
+    const [stats, setStats] = useState({
+        totalExams: 0,
+        totalStudents: 0,
+        averageScore: 0,
+        totalViolations: 0
+    });
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Calculate stats from mock data
-    const totalExams = new Set(mockExamResults.map((r) => r.examId)).size;
-    const totalStudents = new Set(mockExamResults.map((r) => r.studentId)).size;
-    const averageScore =
-        mockExamResults.reduce((sum, r) => sum + r.percentage, 0) / mockExamResults.length;
-    const totalViolations = mockExamResults.reduce((sum, r) => sum + r.violations, 0);
+    useEffect(() => {
+        async function fetchStats() {
+            const data = await getTeacherDashboardStats();
+            if (data && !("error" in data)) {
+                setStats(data);
+            }
+            setIsLoading(false);
+        }
+        fetchStats();
+    }, []);
 
     return (
         <div className="min-h-screen bg-indigo-50 p-6 md:p-8 space-y-8">
@@ -22,7 +34,7 @@ export default function TeacherDashboard() {
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Dashboard Guru</h1>
                     <p className="text-gray-500 mt-1">
-                        Selamat datang kembali, Pak Budi. Berikut ringkasan aktivitas ujian hari ini.
+                        Selamat datang kembali. Berikut ringkasan aktivitas ujian hari ini.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -36,7 +48,7 @@ export default function TeacherDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Ujian"
-                    value={totalExams}
+                    value={isLoading ? "..." : stats.totalExams}
                     color="blue"
                     icon={<BookOpen className="w-6 h-6" />}
                     subtitle="Ujian aktif"
@@ -44,16 +56,16 @@ export default function TeacherDashboard() {
 
                 <StatCard
                     title="Rata-rata Nilai"
-                    value={`${averageScore.toFixed(1)}%`}
+                    value={isLoading ? "..." : `${stats.averageScore.toFixed(1)}%`}
                     color="green"
-                    trend={{ value: 5.2, isPositive: true }}
+                    trend={{ value: 0, isPositive: true }} // Trend logic needs historical data, skipping for now
                     icon={<TrendingUp className="w-6 h-6" />}
-                    subtitle="Peningkatan"
+                    subtitle="Rata-rata kelas"
                 />
 
                 <StatCard
                     title="Total Siswa"
-                    value={totalStudents}
+                    value={isLoading ? "..." : stats.totalStudents}
                     color="blue"
                     icon={<Users className="w-6 h-6" />}
                     subtitle="Mengikuti ujian"
@@ -61,9 +73,9 @@ export default function TeacherDashboard() {
 
                 <StatCard
                     title="Total Pelanggaran"
-                    value={totalViolations}
+                    value={isLoading ? "..." : stats.totalViolations}
                     color="red"
-                    trend={{ value: 12.5, isPositive: false }}
+                    trend={{ value: 0, isPositive: false }}
                     icon={<AlertTriangle className="w-6 h-6" />}
                     subtitle="Perlu ditinjau"
                 />
@@ -121,7 +133,7 @@ export default function TeacherDashboard() {
                             </div>
                             <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-red-600 transition-colors">Tinjau Pelanggaran</h3>
                             <p className="text-sm text-gray-500">
-                                <span className="text-red-600 font-medium">{totalViolations} pelanggaran</span> memerlukan tindakan Anda
+                                <span className="text-red-600 font-medium">{isLoading ? "..." : stats.totalViolations} pelanggaran</span> memerlukan tindakan Anda
                             </p>
                         </div>
                     </button>

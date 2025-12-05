@@ -1,25 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { mockUsers, type User } from "@/lib/mock-admin-data";
 import { AddUserModal } from "@/components/admin/add-user-modal";
 import { EditUserModal } from "@/components/admin/edit-user-modal";
 import { DeleteUserDialog } from "@/components/admin/delete-user-dialog";
+import { getUsers, resetPassword } from "@/actions/admin-actions";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { User } from "@/types";
 
 type RoleFilter = "ALL" | "STUDENT" | "TEACHER";
 
 export default function UsersPage() {
+    const [users, setUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [filterRole, setFilterRole] = useState<RoleFilter>("ALL");
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const { toast } = useToast();
+
+    const fetchUsers = async () => {
+        setIsLoading(true);
+        const data = await getUsers();
+        if (Array.isArray(data)) {
+            setUsers(data as User[]);
+        }
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     // Filter and search users
-    const filteredUsers = mockUsers.filter((user) => {
+    const filteredUsers = users.filter((user) => {
         const matchesRole = filterRole === "ALL" || user.role === filterRole;
         const matchesSearch =
             user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,10 +56,40 @@ export default function UsersPage() {
         setIsDeleteDialogOpen(true);
     };
 
-    const handleResetPassword = (user: User) => {
-        // TODO: Implement reset password logic
-        console.log("Resetting password for:", user.email);
-        alert(`Password baru telah dikirim ke ${user.email}`);
+    const handleResetPassword = async (user: User) => {
+        if (confirm(`Reset password untuk ${user.name}? Password akan menjadi 'password123'`)) {
+            const res = await resetPassword(user.id);
+            if (res.success) {
+                toast({
+                    title: "Password Reset Berhasil",
+                    description: `Password untuk ${user.email} telah direset menjadi '${res.newPassword}'`,
+                });
+            } else {
+                toast({
+                    title: "Gagal Reset Password",
+                    description: "Terjadi kesalahan saat mereset password.",
+                    variant: "destructive",
+                });
+            }
+        }
+    };
+
+    const handleUserCreated = () => {
+        fetchUsers();
+        setIsAddModalOpen(false);
+        toast({ title: "User Berhasil Dibuat" });
+    };
+
+    const handleUserUpdated = () => {
+        fetchUsers();
+        setIsEditModalOpen(false);
+        toast({ title: "User Berhasil Diupdate" });
+    };
+
+    const handleUserDeleted = () => {
+        fetchUsers();
+        setIsDeleteDialogOpen(false);
+        toast({ title: "User Berhasil Dihapus" });
     };
 
     const columns = [
@@ -61,10 +110,12 @@ export default function UsersPage() {
                 <span
                     className={`px-2 py-1 rounded text-xs font-semibold ${user.role === "TEACHER"
                         ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                        : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                        : user.role === "ADMIN"
+                            ? "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+                            : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                         }`}
                 >
-                    {user.role === "TEACHER" ? "Guru" : "Siswa"}
+                    {user.role === "TEACHER" ? "Guru" : user.role === "ADMIN" ? "Admin" : "Siswa"}
                 </span>
             ),
         },
@@ -174,16 +225,27 @@ export default function UsersPage() {
             </div>
 
             {/* Users Table */}
-            <DataTable columns={columns} data={filteredUsers} />
+            {isLoading ? (
+                <div className="flex justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                </div>
+            ) : (
+                <DataTable columns={columns} data={filteredUsers} />
+            )}
 
             {/* Modals */}
-            <AddUserModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+            <AddUserModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={handleUserCreated}
+            />
             <EditUserModal
                 isOpen={isEditModalOpen}
                 onClose={() => {
                     setIsEditModalOpen(false);
                     setSelectedUser(null);
                 }}
+                onSuccess={handleUserUpdated}
                 user={selectedUser}
             />
             <DeleteUserDialog
@@ -192,6 +254,7 @@ export default function UsersPage() {
                     setIsDeleteDialogOpen(false);
                     setSelectedUser(null);
                 }}
+                onSuccess={handleUserDeleted}
                 user={selectedUser}
             />
         </div>

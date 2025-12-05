@@ -3,34 +3,65 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { createUser } from "@/actions/admin-actions";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSuccess: () => void;
 }
 
-export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
+export function AddUserModal({ isOpen, onClose, onSuccess }: AddUserModalProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        role: "STUDENT" as "STUDENT" | "TEACHER",
+        role: "STUDENT" as "STUDENT" | "TEACHER" | "ADMIN",
         autoGeneratePassword: true,
         password: "",
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement add user logic
-        console.log("Adding user:", formData);
-        onClose();
-        // Reset form
-        setFormData({
-            name: "",
-            email: "",
-            role: "STUDENT",
-            autoGeneratePassword: true,
-            password: "",
-        });
+        setIsLoading(true);
+
+        try {
+            const res = await createUser({
+                name: formData.name,
+                email: formData.email,
+                role: formData.role,
+                password: formData.autoGeneratePassword ? undefined : formData.password
+            });
+
+            if (res.success) {
+                onSuccess();
+                // Reset form
+                setFormData({
+                    name: "",
+                    email: "",
+                    role: "STUDENT",
+                    autoGeneratePassword: true,
+                    password: "",
+                });
+            } else {
+                toast({
+                    title: "Gagal Menambahkan User",
+                    description: res.error || "Terjadi kesalahan.",
+                    variant: "destructive",
+                });
+            }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Terjadi kesalahan jaringan.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const generatePassword = () => {
@@ -60,6 +91,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="John Doe"
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -73,6 +105,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="user@example.com"
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -81,11 +114,13 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                         <label className="block text-sm font-medium mb-1">Role</label>
                         <select
                             value={formData.role}
-                            onChange={(e) => setFormData({ ...formData, role: e.target.value as "STUDENT" | "TEACHER" })}
+                            onChange={(e) => setFormData({ ...formData, role: e.target.value as "STUDENT" | "TEACHER" | "ADMIN" })}
                             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            disabled={isLoading}
                         >
                             <option value="STUDENT">Siswa</option>
                             <option value="TEACHER">Guru</option>
+                            <option value="ADMIN">Admin</option>
                         </select>
                     </div>
 
@@ -104,14 +139,16 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                                     });
                                 }}
                                 className="rounded"
+                                disabled={isLoading}
                             />
                             <span className="text-sm font-medium">Generate Password Otomatis</span>
                         </label>
 
                         {formData.autoGeneratePassword ? (
                             <div className="p-3 bg-muted rounded-lg">
-                                <p className="text-sm text-muted-foreground mb-1">Password yang di-generate:</p>
-                                <p className="font-mono font-semibold">{formData.password || generatePassword()}</p>
+                                <p className="text-sm text-muted-foreground mb-1">Password yang di-generate (Default):</p>
+                                <p className="font-mono font-semibold">password123</p>
+                                <p className="text-xs text-muted-foreground mt-1">*User disarankan mengganti password saat login pertama.</p>
                             </div>
                         ) : (
                             <input
@@ -121,16 +158,20 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                                 placeholder="Masukkan password"
+                                disabled={isLoading}
                             />
                         )}
                     </div>
 
                     {/* Actions */}
                     <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={onClose}>
+                        <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
                             Batal
                         </Button>
-                        <Button type="submit">Tambah User</Button>
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Tambah User
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

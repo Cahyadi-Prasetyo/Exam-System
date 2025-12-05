@@ -6,7 +6,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/navbar";
 
-export function TeacherLayoutClient({ children }: { children: React.ReactNode }) {
+export function TeacherLayoutClient({ children, user }: { children: React.ReactNode, user: any }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
@@ -51,7 +51,12 @@ export function TeacherLayoutClient({ children }: { children: React.ReactNode })
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Navbar user={{ name: "Pak Budi", role: "Guru Matematika", email: "guru@sekolah.id" }} />
+                        <Navbar user={{
+                            name: user?.name || "Guru",
+                            role: user?.role || "Teacher",
+                            email: user?.email || "",
+                            image: user?.image
+                        }} />
                     </div>
                 </div>
 

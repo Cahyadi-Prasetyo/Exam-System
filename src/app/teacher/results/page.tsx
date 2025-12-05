@@ -1,22 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import {
-    mockExamResults,
     ExamResult,
     getScoreColor,
     getScoreBgColor,
-} from "@/lib/mock-teacher-data";
+} from "@/lib/mock-teacher-data"; // Keeping types/helpers, but not data
 import { GradeAdjustmentModal } from "@/components/teacher/grade-adjustment-modal";
+import { getAllExamResults } from "@/actions/teacher-actions";
+import { Loader2 } from "lucide-react";
 
 export default function ExamResultsPage() {
     const router = useRouter();
-    const [data, setData] = useState<ExamResult[]>(mockExamResults);
+    const [data, setData] = useState<ExamResult[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedResult, setSelectedResult] = useState<ExamResult | null>(null);
     const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = useState(false);
+
+    useEffect(() => {
+        async function fetchResults() {
+            const res = await getAllExamResults();
+            if (Array.isArray(res)) {
+                setData(res as ExamResult[]);
+            }
+            setIsLoading(false);
+        }
+        fetchResults();
+    }, []);
 
     const handleExportCSV = () => {
         // Basic CSV export logic
@@ -67,6 +80,9 @@ export default function ExamResultsPage() {
     };
 
     const handleSaveAdjustment = (id: string, adjustment: number, bonus: number, reason: string) => {
+        // TODO: Implement server action for saving adjustment
+        console.log("Saving adjustment:", { id, adjustment, bonus, reason });
+
         setData((prev) =>
             prev.map((item) => {
                 if (item.id === id) {
@@ -92,6 +108,7 @@ export default function ExamResultsPage() {
 
     const handleTogglePublish = (shouldPublish: boolean) => {
         if (confirm(`Apakah Anda yakin ingin ${shouldPublish ? 'mempublikasikan' : 'menyembunyikan'} semua nilai?`)) {
+            // TODO: Implement server action for bulk publish
             setData((prev) => prev.map(item => ({ ...item, isPublished: shouldPublish })));
         }
     };
@@ -257,12 +274,18 @@ export default function ExamResultsPage() {
 
             {/* Content */}
             <div className="bg-background rounded-lg p-6">
-                <DataTable
-                    data={data}
-                    columns={columns}
-                    searchKey="studentName"
-                    pageSize={10}
-                />
+                {isLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                    </div>
+                ) : (
+                    <DataTable
+                        data={data}
+                        columns={columns}
+                        searchKey="studentName"
+                        pageSize={10}
+                    />
+                )}
             </div>
 
             <GradeAdjustmentModal
