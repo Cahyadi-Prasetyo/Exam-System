@@ -148,6 +148,20 @@ export async function submitAnswer(attemptId: string, questionId: string, answer
                 }
             });
         }
+
+        // Update activity tracking for real-time monitoring
+        const answerCount = await prisma.answer.count({
+            where: { examAttemptId: attemptId }
+        });
+
+        await prisma.examAttempt.update({
+            where: { id: attemptId },
+            data: {
+                lastActivityAt: new Date(),
+                answeredCount: answerCount
+            }
+        });
+
         return { success: true };
     } catch (error) {
         console.error("Failed to submit answer:", error);

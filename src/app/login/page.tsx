@@ -31,7 +31,20 @@ export default function LoginPage() {
                 return;
             }
 
-            router.push("/");
+            // Fetch session to get user role
+            const response = await fetch("/api/auth/session");
+            const session = await response.json();
+
+            // Redirect based on role
+            if (session?.user?.role === "ADMIN") {
+                router.push("/admin/dashboard");
+            } else if (session?.user?.role === "TEACHER") {
+                router.push("/teacher/dashboard");
+            } else if (session?.user?.role === "STUDENT") {
+                router.push("/student/dashboard");
+            } else {
+                router.push("/");
+            }
             router.refresh();
         } catch (err) {
             setError("Terjadi kesalahan. Silakan coba lagi.");

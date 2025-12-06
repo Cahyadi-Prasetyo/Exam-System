@@ -1,6 +1,8 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,6 +25,16 @@ interface NavbarProps {
 }
 
 export function Navbar({ user }: NavbarProps) {
+    const pathname = usePathname();
+
+    // Determine profile path based on current route
+    const getProfilePath = () => {
+        if (pathname.startsWith("/admin")) return "/admin/profile";
+        if (pathname.startsWith("/teacher")) return "/teacher/profile";
+        if (pathname.startsWith("/student")) return "/student/profile";
+        return "/profile";
+    };
+
     return (
         <header className="h-16 border-b bg-white px-6 flex items-center justify-between sticky top-0 z-30">
             {/* Left side (Breadcrumbs or Page Title could go here) */}
@@ -60,13 +72,17 @@ export function Navbar({ user }: NavbarProps) {
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="cursor-pointer">
-                            <User className="w-4 h-4 mr-2 text-gray-500" />
-                            Profil
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href={getProfilePath()}>
+                                <User className="w-4 h-4 mr-2 text-gray-500" />
+                                Profil
+                            </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
-                            <Settings className="w-4 h-4 mr-2 text-gray-500" />
-                            Pengaturan
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href={getProfilePath()}>
+                                <Settings className="w-4 h-4 mr-2 text-gray-500" />
+                                Pengaturan
+                            </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -82,3 +98,4 @@ export function Navbar({ user }: NavbarProps) {
         </header>
     );
 }
+

@@ -1,8 +1,9 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { JoinExamForm } from "@/components/student/join-exam-form";
-import { BookOpen, History, User } from "lucide-react";
+import { BookOpen, History, User, Settings } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
+import Link from "next/link";
 
 export default async function StudentDashboardPage() {
     const session = await auth();
@@ -26,9 +27,13 @@ export default async function StudentDashboardPage() {
                             <p className="text-sm font-medium text-gray-900">{session.user.name}</p>
                             <p className="text-xs text-gray-500">Siswa</p>
                         </div>
-                        <div className="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center border border-indigo-200">
+                        <Link
+                            href="/student/profile"
+                            className="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center border border-indigo-200 hover:bg-indigo-200 transition-colors"
+                            title="Profil Saya"
+                        >
                             <User className="w-4 h-4 text-indigo-600" />
-                        </div>
+                        </Link>
                         <div className="pl-3 border-l border-gray-200 ml-3">
                             <LogoutButton />
                         </div>

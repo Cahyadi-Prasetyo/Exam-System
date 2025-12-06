@@ -89,6 +89,10 @@ model ExamAttempt {
   bonusPoints      Float     @default(0)
   adjustmentReason String?
   isPublished      Boolean   @default(false)
+  
+  // Real-time Monitoring
+  lastActivityAt   DateTime  @default(now())
+  answeredCount    Int       @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
