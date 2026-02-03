@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, ChevronDown, LogOut, Settings, User } from "lucide-react";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 interface NavbarProps {
     user: {
@@ -36,7 +37,7 @@ export function Navbar({ user }: NavbarProps) {
     };
 
     return (
-        <header className="h-16 border-b bg-white px-6 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-16 border-b bg-background px-6 flex items-center justify-between sticky top-0 z-30">
             {/* Left side (Breadcrumbs or Page Title could go here) */}
             <div className="flex items-center gap-4">
                 {/* Mobile menu trigger would be handled by the parent layout */}
@@ -44,6 +45,7 @@ export function Navbar({ user }: NavbarProps) {
 
             {/* Right side actions */}
             <div className="flex items-center gap-4">
+                <ModeToggle />
                 {/* Notifications (Placeholder) */}
                 <Button variant="ghost" size="icon" className="relative text-gray-500 hover:text-gray-700">
                     <Bell className="w-5 h-5" />

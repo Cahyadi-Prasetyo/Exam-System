@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/providers/toast-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 const geistSans = Geist({
@@ -28,9 +29,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ErrorBoundary>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </ThemeProvider>
         </ErrorBoundary>
       </body>
     </html>
