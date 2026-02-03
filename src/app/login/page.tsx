@@ -53,28 +53,28 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-muted/20 px-4">
             <div className="w-full max-w-[400px] space-y-6">
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center space-y-2">
-                    <div className="p-3 bg-blue-600 rounded-xl shadow-sm">
-                        <School className="w-8 h-8 text-white" />
+                    <div className="p-3 bg-primary rounded-xl shadow-sm">
+                        <School className="w-8 h-8 text-primary-foreground" />
                     </div>
-                    <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                         Sistem Ujian Online
                     </h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                         Silakan masuk untuk melanjutkan
                     </p>
                 </div>
 
                 {/* Main Card */}
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                <div className="bg-card p-8 rounded-xl shadow-sm border border-border">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-2">
                             <label
                                 htmlFor="email"
-                                className="text-sm font-medium text-gray-700"
+                                className="text-sm font-medium text-foreground"
                             >
                                 Email
                             </label>
@@ -84,7 +84,7 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent"
+                                className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-background text-foreground"
                                 placeholder="nama@sekolah.sch.id"
                             />
                         </div>
@@ -93,7 +93,7 @@ export default function LoginPage() {
                             <div className="flex items-center justify-between">
                                 <label
                                     htmlFor="password"
-                                    className="text-sm font-medium text-gray-700"
+                                    className="text-sm font-medium text-foreground"
                                 >
                                     Password
                                 </label>
@@ -104,20 +104,20 @@ export default function LoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-transparent"
+                                className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-background text-foreground"
                                 placeholder="••••••••"
                             />
                         </div>
 
                         {error && (
-                            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg">
+                            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg">
                                 {error}
                             </div>
                         )}
 
                         <Button
                             type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 rounded-lg transition-colors"
                             isLoading={isLoading}
                         >
                             Masuk
@@ -127,25 +127,25 @@ export default function LoginPage() {
 
                 {/* Demo Accounts Helper */}
                 <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-4">
+                    <p className="text-xs text-muted-foreground mb-4">
                         Akun Demo (Klik untuk copy)
                     </p>
                     <div className="flex justify-center gap-3 text-xs">
                         <button
                             onClick={() => { setEmail("admin@exam.com"); setPassword("password123"); }}
-                            className="px-3 py-1.5 bg-white border border-gray-200 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors"
+                            className="px-3 py-1.5 bg-card border border-border rounded-md hover:border-primary hover:text-primary transition-colors text-foreground"
                         >
                             Admin
                         </button>
                         <button
                             onClick={() => { setEmail("teacher@exam.com"); setPassword("password123"); }}
-                            className="px-3 py-1.5 bg-white border border-gray-200 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors"
+                            className="px-3 py-1.5 bg-card border border-border rounded-md hover:border-primary hover:text-primary transition-colors text-foreground"
                         >
                             Guru
                         </button>
                         <button
                             onClick={() => { setEmail("student@exam.com"); setPassword("password123"); }}
-                            className="px-3 py-1.5 bg-white border border-gray-200 rounded-md hover:border-blue-500 hover:text-blue-600 transition-colors"
+                            className="px-3 py-1.5 bg-card border border-border rounded-md hover:border-primary hover:text-primary transition-colors text-foreground"
                         >
                             Siswa
                         </button>

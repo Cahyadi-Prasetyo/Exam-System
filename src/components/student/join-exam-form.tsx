@@ -48,7 +48,7 @@ export function JoinExamForm() {
         <div className="w-full max-w-md mx-auto">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-2">
-                    <label htmlFor="token" className="text-sm font-medium text-gray-700">
+                    <label htmlFor="token" className="text-sm font-medium text-foreground">
                         Kode Token Ujian
                     </label>
                     <div className="relative">
@@ -73,7 +73,7 @@ export function JoinExamForm() {
 
                 <Button
                     type="submit"
-                    className="w-full h-12 text-base font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.02]"
+                    className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
                     disabled={isLoading}
                 >
                     {isLoading ? (

@@ -144,11 +144,11 @@ export function ProfilePage() {
             </div>
 
             {/* Profile Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border p-6 mb-6">
+            <div className="bg-card rounded-xl border p-6 mb-6">
                 {/* Avatar and Role Badge */}
                 <div className="flex items-center gap-4 mb-6 pb-6 border-b">
-                    <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                        <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-2xl font-bold text-primary">
                             {profile.name.charAt(0).toUpperCase()}
                         </span>
                     </div>
@@ -172,7 +172,7 @@ export function ProfilePage() {
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
                                 required
                             />
                         </div>
@@ -225,7 +225,7 @@ export function ProfilePage() {
             </div>
 
             {/* Password Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border p-6">
+            <div className="bg-card rounded-xl border p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <h3 className="text-lg font-semibold flex items-center gap-2">

@@ -22,7 +22,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
             {/* Main Content */}
             <div className="lg:pl-64 flex flex-col min-h-screen">
                 {/* Navbar with Mobile Trigger */}
-                <div className="sticky top-0 z-30 bg-white border-b px-6 h-16 flex items-center justify-between">
+                <div className="sticky top-0 z-30 bg-background border-b px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
