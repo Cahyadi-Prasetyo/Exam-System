@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { QuestionList } from "./question-list";
 import { QuestionEditor } from "./question-editor";
-import { createQuestion, deleteQuestion } from "@/actions/question-actions";
+import { QuestionBankSelector, BankQuestion } from "./question-bank-selector";
+import { createQuestion, deleteQuestion, createQuestionFromBank } from "@/actions/question-actions";
 import { publishExam, regenerateToken } from "@/actions/exam-actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ export function EditorLayout({ exam, questions }: EditorLayoutProps) {
     const [isPublishing, setIsPublishing] = useState(false);
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    const [showBankSelector, setShowBankSelector] = useState(false);
 
     // Sync state with URL param
     useEffect(() => {
@@ -72,6 +74,20 @@ export function EditorLayout({ exam, questions }: EditorLayoutProps) {
                 router.push(`/teacher/exams/${exam.id}/edit`);
             }
         }
+        setIsLoading(false);
+    };
+
+    const handleImportFromBank = async (bankQuestions: BankQuestion[]) => {
+        setIsLoading(true);
+        for (const q of bankQuestions) {
+            await createQuestionFromBank(exam.id, {
+                text: q.text,
+                type: q.type === "multiple_choice" ? "MULTIPLE_CHOICE" : "ESSAY",
+                options: q.options || [],
+                correctAnswer: q.correctAnswer ?? 0,
+            });
+        }
+        router.refresh();
         setIsLoading(false);
     };
 
@@ -185,7 +201,16 @@ export function EditorLayout({ exam, questions }: EditorLayoutProps) {
                     onSelect={handleSelect}
                     onAdd={handleAdd}
                     onDelete={handleDelete}
+                    onImportFromBank={() => setShowBankSelector(true)}
                     isLoading={isLoading}
+                />
+
+                {/* Question Bank Selector Modal */}
+                <QuestionBankSelector
+                    isOpen={showBankSelector}
+                    onClose={() => setShowBankSelector(false)}
+                    onSelectQuestions={handleImportFromBank}
+                    existingQuestionIds={questions.map(q => q.id)}
                 />
 
                 {

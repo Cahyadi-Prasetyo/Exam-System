@@ -130,3 +130,44 @@ export async function deleteOption(optionId: string, examId: string) {
         return { error: "Gagal menghapus opsi" };
     }
 }
+
+interface BankQuestionData {
+    text: string;
+    type: "MULTIPLE_CHOICE" | "ESSAY";
+    options?: string[];
+    correctAnswer?: number;
+}
+
+export async function createQuestionFromBank(examId: string, data: BankQuestionData) {
+    const session = await auth();
+    if (!session || session.user.role !== "TEACHER") return { error: "Unauthorized" };
+
+    try {
+        // Create the question
+        const question = await prisma.question.create({
+            data: {
+                examId,
+                text: data.text,
+                type: data.type,
+            },
+        });
+
+        // If multiple choice, create options
+        if (data.type === "MULTIPLE_CHOICE" && data.options && data.options.length > 0) {
+            await prisma.option.createMany({
+                data: data.options.map((text, index) => ({
+                    questionId: question.id,
+                    text,
+                    isCorrect: index === data.correctAnswer,
+                })),
+            });
+        }
+
+        revalidatePath(`/teacher/exams/${examId}/edit`);
+        return { success: true, data: question };
+    } catch (error) {
+        console.error("Error creating question from bank:", error);
+        return { error: "Gagal mengimpor pertanyaan dari bank soal" };
+    }
+}
+

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, FileText, ListChecks } from "lucide-react";
+import { Plus, Trash2, FileText, ListChecks, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Question {
@@ -16,6 +16,7 @@ interface QuestionListProps {
     onSelect: (id: string) => void;
     onAdd: () => void;
     onDelete: (id: string) => void;
+    onImportFromBank?: () => void;
     isLoading?: boolean;
 }
 
@@ -25,27 +26,43 @@ export function QuestionList({
     onSelect,
     onAdd,
     onDelete,
+    onImportFromBank,
     isLoading
 }: QuestionListProps) {
+
     return (
         <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 md:w-72 shrink-0">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/50">
-                <div className="flex items-center gap-2">
-                    <h2 className="font-semibold text-gray-700">Daftar Soal</h2>
-                    <span className="text-xs bg-gray-200 px-2 py-1 rounded-full text-gray-600 font-medium">
-                        {questions.length}
-                    </span>
+            <div className="p-4 border-b border-gray-200 bg-gray-50/50">
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                        <h2 className="font-semibold text-gray-700">Daftar Soal</h2>
+                        <span className="text-xs bg-gray-200 px-2 py-1 rounded-full text-gray-600 font-medium">
+                            {questions.length}
+                        </span>
+                    </div>
+                    <Button
+                        onClick={onAdd}
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                        disabled={isLoading}
+                        title="Tambah Soal Baru"
+                    >
+                        <Plus className="w-5 h-5" />
+                    </Button>
                 </div>
-                <Button
-                    onClick={onAdd}
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-                    disabled={isLoading}
-                    title="Tambah Soal Baru"
-                >
-                    <Plus className="w-5 h-5" />
-                </Button>
+                {onImportFromBank && (
+                    <Button
+                        onClick={onImportFromBank}
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs border-indigo-200 text-indigo-600 hover:bg-indigo-50"
+                        disabled={isLoading}
+                    >
+                        <BookOpen className="w-4 h-4 mr-1.5" />
+                        Ambil dari Bank Soal
+                    </Button>
+                )}
             </div>
 
             <div className="flex-1 overflow-y-auto p-3 space-y-2">

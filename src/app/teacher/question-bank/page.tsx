@@ -13,10 +13,13 @@ import {
     ChevronDown,
     Shuffle,
     CheckCircle2,
-    XCircle
+    XCircle,
+    X,
+    Save
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Types
 interface Question {
@@ -122,6 +125,20 @@ export default function QuestionBankPage() {
     const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
     const [isRandomModalOpen, setIsRandomModalOpen] = useState(false);
     const [randomCount, setRandomCount] = useState(5);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+    const { toast } = useToast();
+
+    // Form state for add/edit
+    const [formData, setFormData] = useState({
+        text: "",
+        type: "multiple_choice" as "multiple_choice" | "essay",
+        subject: "Matematika",
+        topic: "",
+        difficulty: "medium" as "easy" | "medium" | "hard",
+        options: ["", "", "", ""],
+        correctAnswer: 0,
+    });
 
     // Filter questions
     const filteredQuestions = questions.filter(q => {
@@ -158,7 +175,103 @@ export default function QuestionBankPage() {
         const selected = shuffled.slice(0, Math.min(randomCount, shuffled.length));
         setSelectedQuestions(selected.map(q => q.id));
         setIsRandomModalOpen(false);
-        alert(`${selected.length} soal dipilih secara acak!`);
+        toast({
+            title: "Soal Dipilih",
+            description: `${selected.length} soal dipilih secara acak!`,
+        });
+    };
+
+    const resetForm = () => {
+        setFormData({
+            text: "",
+            type: "multiple_choice",
+            subject: "Matematika",
+            topic: "",
+            difficulty: "medium",
+            options: ["", "", "", ""],
+            correctAnswer: 0,
+        });
+        setEditingQuestion(null);
+    };
+
+    const handleOpenAddModal = () => {
+        resetForm();
+        setIsAddModalOpen(true);
+    };
+
+    const handleEditQuestion = (question: Question) => {
+        setFormData({
+            text: question.text,
+            type: question.type,
+            subject: question.subject,
+            topic: question.topic,
+            difficulty: question.difficulty,
+            options: question.options || ["", "", "", ""],
+            correctAnswer: question.correctAnswer || 0,
+        });
+        setEditingQuestion(question);
+        setIsAddModalOpen(true);
+    };
+
+    const handleSaveQuestion = () => {
+        if (!formData.text.trim()) {
+            toast({ title: "Error", description: "Teks soal harus diisi", variant: "destructive" });
+            return;
+        }
+        if (!formData.topic.trim()) {
+            toast({ title: "Error", description: "Topik harus diisi", variant: "destructive" });
+            return;
+        }
+
+        if (editingQuestion) {
+            // Update existing
+            setQuestions(prev => prev.map(q =>
+                q.id === editingQuestion.id
+                    ? { ...q, ...formData, options: formData.type === "multiple_choice" ? formData.options : undefined }
+                    : q
+            ));
+            toast({ title: "Berhasil", description: "Soal berhasil diperbarui" });
+        } else {
+            // Add new
+            const newQuestion: Question = {
+                id: Date.now().toString(),
+                text: formData.text,
+                type: formData.type,
+                subject: formData.subject,
+                topic: formData.topic,
+                difficulty: formData.difficulty,
+                options: formData.type === "multiple_choice" ? formData.options : undefined,
+                correctAnswer: formData.type === "multiple_choice" ? formData.correctAnswer : undefined,
+                createdAt: new Date(),
+            };
+            setQuestions(prev => [newQuestion, ...prev]);
+            toast({ title: "Berhasil", description: "Soal berhasil ditambahkan" });
+        }
+
+        setIsAddModalOpen(false);
+        resetForm();
+    };
+
+    const handleBulkDelete = () => {
+        if (confirm(`Hapus ${selectedQuestions.length} soal yang dipilih?`)) {
+            setQuestions(prev => prev.filter(q => !selectedQuestions.includes(q.id)));
+            setSelectedQuestions([]);
+            toast({ title: "Berhasil", description: `${selectedQuestions.length} soal dihapus` });
+        }
+    };
+
+    const handleBulkDuplicate = () => {
+        const duplicated = questions
+            .filter(q => selectedQuestions.includes(q.id))
+            .map(q => ({
+                ...q,
+                id: `${q.id}-copy-${Date.now()}`,
+                text: `[SALINAN] ${q.text}`,
+                createdAt: new Date(),
+            }));
+        setQuestions(prev => [...duplicated, ...prev]);
+        setSelectedQuestions([]);
+        toast({ title: "Berhasil", description: `${duplicated.length} soal diduplikat` });
     };
 
     const stats = {
@@ -186,7 +299,7 @@ export default function QuestionBankPage() {
                         <Shuffle className="w-4 h-4 mr-2" />
                         Acak Soal
                     </Button>
-                    <Button>
+                    <Button onClick={handleOpenAddModal}>
                         <Plus className="w-4 h-4 mr-2" />
                         Tambah Soal
                     </Button>
@@ -277,11 +390,11 @@ export default function QuestionBankPage() {
                         <Button variant="outline" size="sm" onClick={() => setSelectedQuestions([])}>
                             Batal
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={handleBulkDuplicate}>
                             <Copy className="w-4 h-4 mr-1" />
                             Duplikat
                         </Button>
-                        <Button variant="destructive" size="sm">
+                        <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
                             <Trash2 className="w-4 h-4 mr-1" />
                             Hapus
                         </Button>
@@ -344,8 +457,8 @@ export default function QuestionBankPage() {
                                                     <div
                                                         key={idx}
                                                         className={`px-3 py-1.5 rounded text-sm flex items-center gap-2 ${idx === question.correctAnswer
-                                                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                                                : "bg-muted"
+                                                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                                            : "bg-muted"
                                                             }`}
                                                     >
                                                         {idx === question.correctAnswer ? (
@@ -360,7 +473,12 @@ export default function QuestionBankPage() {
                                         )}
                                     </div>
                                     <div className="flex gap-1">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            onClick={() => handleEditQuestion(question)}
+                                        >
                                             <Edit className="w-4 h-4" />
                                         </Button>
                                         <Button
@@ -415,6 +533,140 @@ export default function QuestionBankPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Add/Edit Question Modal */}
+            <Dialog open={isAddModalOpen} onOpenChange={(open) => { if (!open) { resetForm(); setIsAddModalOpen(false); } }}>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            {editingQuestion ? <Edit className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                            {editingQuestion ? "Edit Soal" : "Tambah Soal Baru"}
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        {/* Question Text */}
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Teks Soal *</label>
+                            <textarea
+                                value={formData.text}
+                                onChange={(e) => setFormData(prev => ({ ...prev, text: e.target.value }))}
+                                rows={3}
+                                className="w-full px-4 py-2 border rounded-lg bg-background resize-none"
+                                placeholder="Masukkan teks pertanyaan..."
+                            />
+                        </div>
+
+                        {/* Type & Subject Row */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Tipe Soal</label>
+                                <select
+                                    value={formData.type}
+                                    onChange={(e) => setFormData(prev => ({
+                                        ...prev,
+                                        type: e.target.value as "multiple_choice" | "essay"
+                                    }))}
+                                    className="w-full px-4 py-2 border rounded-lg bg-background"
+                                >
+                                    <option value="multiple_choice">Pilihan Ganda</option>
+                                    <option value="essay">Esai</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Mata Pelajaran</label>
+                                <select
+                                    value={formData.subject}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                                    className="w-full px-4 py-2 border rounded-lg bg-background"
+                                >
+                                    {subjects.filter(s => s !== "Semua").map(s => (
+                                        <option key={s} value={s}>{s}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Topic & Difficulty Row */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Topik *</label>
+                                <input
+                                    type="text"
+                                    value={formData.topic}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, topic: e.target.value }))}
+                                    placeholder="Contoh: Aljabar, Mekanika, dll."
+                                    className="w-full px-4 py-2 border rounded-lg bg-background"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Tingkat Kesulitan</label>
+                                <select
+                                    value={formData.difficulty}
+                                    onChange={(e) => setFormData(prev => ({
+                                        ...prev,
+                                        difficulty: e.target.value as "easy" | "medium" | "hard"
+                                    }))}
+                                    className="w-full px-4 py-2 border rounded-lg bg-background"
+                                >
+                                    <option value="easy">Mudah</option>
+                                    <option value="medium">Sedang</option>
+                                    <option value="hard">Sulit</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Options (for multiple choice) */}
+                        {formData.type === "multiple_choice" && (
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Opsi Jawaban</label>
+                                <div className="space-y-2">
+                                    {formData.options.map((opt, idx) => (
+                                        <div key={idx} className="flex items-center gap-2">
+                                            <input
+                                                type="radio"
+                                                name="correctAnswer"
+                                                checked={formData.correctAnswer === idx}
+                                                onChange={() => setFormData(prev => ({ ...prev, correctAnswer: idx }))}
+                                                className="w-4 h-4"
+                                            />
+                                            <span className="text-sm font-medium w-6">{String.fromCharCode(65 + idx)}.</span>
+                                            <input
+                                                type="text"
+                                                value={opt}
+                                                onChange={(e) => {
+                                                    const newOptions = [...formData.options];
+                                                    newOptions[idx] = e.target.value;
+                                                    setFormData(prev => ({ ...prev, options: newOptions }));
+                                                }}
+                                                placeholder={`Opsi ${String.fromCharCode(65 + idx)}`}
+                                                className="flex-1 px-3 py-1.5 border rounded bg-background text-sm"
+                                            />
+                                            {formData.correctAnswer === idx && (
+                                                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    Pilih radio button untuk menandai jawaban yang benar
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => { resetForm(); setIsAddModalOpen(false); }}>
+                            Batal
+                        </Button>
+                        <Button onClick={handleSaveQuestion}>
+                            <Save className="w-4 h-4 mr-2" />
+                            {editingQuestion ? "Simpan Perubahan" : "Tambah Soal"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
+
