@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { AddUserModal } from "@/components/admin/add-user-modal";
 import { EditUserModal } from "@/components/admin/edit-user-modal";
 import { DeleteUserDialog } from "@/components/admin/delete-user-dialog";
+import { ImportUserModal } from "@/components/admin/import-user-modal";
 import { getUsers, resetPassword } from "@/actions/admin-actions";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@/types";
 
@@ -21,6 +22,7 @@ export default function UsersPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const { toast } = useToast();
 
@@ -179,21 +181,16 @@ export default function UsersPage() {
                         Kelola akun guru dan siswa
                     </p>
                 </div>
-                <Button onClick={() => setIsAddModalOpen(true)}>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 mr-2"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            fillRule="evenodd"
-                            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                            clipRule="evenodd"
-                        />
-                    </svg>
-                    Tambah User
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setIsImportModalOpen(true)}>
+                        <Upload className="h-5 w-5 mr-2" />
+                        Import
+                    </Button>
+                    <Button onClick={() => setIsAddModalOpen(true)}>
+                        <Plus className="h-5 w-5 mr-2" />
+                        Tambah User
+                    </Button>
+                </div>
             </div>
 
             {/* Filters */}
@@ -256,6 +253,14 @@ export default function UsersPage() {
                 }}
                 onSuccess={handleUserDeleted}
                 user={selectedUser}
+            />
+            <ImportUserModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onSuccess={() => {
+                    fetchUsers();
+                    setIsImportModalOpen(false);
+                }}
             />
         </div>
     );

@@ -50,10 +50,11 @@ export function DialogHeader({ children }: DialogHeaderProps) {
 
 interface DialogTitleProps {
     children: React.ReactNode;
+    className?: string;
 }
 
-export function DialogTitle({ children }: DialogTitleProps) {
-    return <h2 className="text-xl font-semibold">{children}</h2>;
+export function DialogTitle({ children, className = "" }: DialogTitleProps) {
+    return <h2 className={`text-xl font-semibold ${className}`}>{children}</h2>;
 }
 
 interface DialogFooterProps {
