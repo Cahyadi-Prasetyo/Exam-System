@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, ChevronDown, LogOut, Settings, User } from "lucide-react";
+import { ChevronDown, LogOut, Settings, User } from "lucide-react";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
 interface NavbarProps {
     user: {
@@ -46,11 +47,8 @@ export function Navbar({ user }: NavbarProps) {
             {/* Right side actions */}
             <div className="flex items-center gap-4">
                 <ModeToggle />
-                {/* Notifications (Placeholder) */}
-                <Button variant="ghost" size="icon" className="relative text-gray-500 hover:text-gray-700">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                </Button>
+                {/* Notifications */}
+                <NotificationDropdown />
 
                 <div className="h-6 w-px bg-gray-200 mx-1"></div>
 
