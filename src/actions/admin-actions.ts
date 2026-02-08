@@ -104,21 +104,64 @@ export async function createUser(data: {
     }
 }
 
-export async function updateUser(id: string, data: { name: string; email: string; role: "STUDENT" | "TEACHER" | "ADMIN" }) {
+export async function updateUser(
+    id: string,
+    data: {
+        name: string;
+        email: string;
+        role: "STUDENT" | "TEACHER" | "ADMIN";
+        classId?: string;
+        subjectIds?: string[];
+        teacherClassIds?: string[];
+    }
+) {
     const session = await auth();
     if (!session || session.user.role !== "ADMIN") {
         return { error: "Unauthorized" };
     }
 
     try {
+        // Update basic user info
         await prisma.user.update({
             where: { id },
             data: {
                 name: data.name,
                 email: data.email,
-                role: data.role
+                role: data.role,
+                classId: data.role === "STUDENT" ? (data.classId || null) : null,
             }
         });
+
+        // Handle teacher relations
+        if (data.role === "TEACHER") {
+            // Delete existing relations first
+            await prisma.teacherSubject.deleteMany({ where: { userId: id } });
+            await prisma.teacherClass.deleteMany({ where: { userId: id } });
+
+            // Create new subject relations
+            if (data.subjectIds && data.subjectIds.length > 0) {
+                await prisma.teacherSubject.createMany({
+                    data: data.subjectIds.map(subjectId => ({
+                        userId: id,
+                        subjectId
+                    }))
+                });
+            }
+
+            // Create new class relations
+            if (data.teacherClassIds && data.teacherClassIds.length > 0) {
+                await prisma.teacherClass.createMany({
+                    data: data.teacherClassIds.map(classId => ({
+                        userId: id,
+                        classId
+                    }))
+                });
+            }
+        } else {
+            // If role changed from TEACHER to something else, remove teacher relations
+            await prisma.teacherSubject.deleteMany({ where: { userId: id } });
+            await prisma.teacherClass.deleteMany({ where: { userId: id } });
+        }
 
         revalidatePath("/admin/users");
         return { success: true };
