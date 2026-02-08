@@ -15,11 +15,14 @@ import {
     CheckCircle2,
     XCircle,
     X,
-    Save
+    Save,
+    FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { DocumentImportModal } from "@/components/exam/document-import-modal";
+import type { ParsedQuestion } from "@/lib/document-parser";
 
 // Types
 interface Question {
@@ -127,6 +130,7 @@ export default function QuestionBankPage() {
     const [randomCount, setRandomCount] = useState(5);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+    const [isDocImportOpen, setIsDocImportOpen] = useState(false);
     const { toast } = useToast();
 
     // Form state for add/edit
@@ -274,6 +278,23 @@ export default function QuestionBankPage() {
         toast({ title: "Berhasil", description: `${duplicated.length} soal diduplikat` });
     };
 
+    // Handle import from document
+    const handleDocImport = (importedQuestions: ParsedQuestion[]) => {
+        const newQuestions: Question[] = importedQuestions.map((q, idx) => ({
+            id: `imported-${Date.now()}-${idx}`,
+            text: q.text,
+            type: q.type,
+            subject: q.subject || "Matematika",
+            topic: q.topic || "Umum",
+            difficulty: q.difficulty || "medium",
+            options: q.type === "multiple_choice" ? q.options : undefined,
+            correctAnswer: q.type === "multiple_choice" ? q.correctAnswer : undefined,
+            createdAt: new Date(),
+        }));
+        setQuestions(prev => [...newQuestions, ...prev]);
+        toast({ title: "Berhasil", description: `${newQuestions.length} soal diimpor dari dokumen` });
+    };
+
     const stats = {
         total: questions.length,
         easy: questions.filter(q => q.difficulty === "easy").length,
@@ -294,10 +315,14 @@ export default function QuestionBankPage() {
                         Kelola koleksi soal untuk ujian
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     <Button variant="outline" onClick={() => setIsRandomModalOpen(true)}>
                         <Shuffle className="w-4 h-4 mr-2" />
                         Acak Soal
+                    </Button>
+                    <Button variant="outline" onClick={() => setIsDocImportOpen(true)}>
+                        <FileText className="w-4 h-4 mr-2" />
+                        Import Dokumen
                     </Button>
                     <Button onClick={handleOpenAddModal}>
                         <Plus className="w-4 h-4 mr-2" />
@@ -666,6 +691,13 @@ export default function QuestionBankPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Document Import Modal */}
+            <DocumentImportModal
+                isOpen={isDocImportOpen}
+                onClose={() => setIsDocImportOpen(false)}
+                onImport={handleDocImport}
+            />
         </div>
     );
 }

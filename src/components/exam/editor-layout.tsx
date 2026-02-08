@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { QuestionList } from "./question-list";
 import { QuestionEditor } from "./question-editor";
 import { QuestionBankSelector, BankQuestion } from "./question-bank-selector";
+import { DocumentImportModal } from "./document-import-modal";
+import type { ParsedQuestion } from "@/lib/document-parser";
 import { createQuestion, deleteQuestion, createQuestionFromBank } from "@/actions/question-actions";
 import { publishExam, regenerateToken } from "@/actions/exam-actions";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -35,6 +37,7 @@ export function EditorLayout({ exam, questions }: EditorLayoutProps) {
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const [showBankSelector, setShowBankSelector] = useState(false);
+    const [showDocImport, setShowDocImport] = useState(false);
 
     // Sync state with URL param
     useEffect(() => {
@@ -80,6 +83,21 @@ export function EditorLayout({ exam, questions }: EditorLayoutProps) {
     const handleImportFromBank = async (bankQuestions: BankQuestion[]) => {
         setIsLoading(true);
         for (const q of bankQuestions) {
+            await createQuestionFromBank(exam.id, {
+                text: q.text,
+                type: q.type === "multiple_choice" ? "MULTIPLE_CHOICE" : "ESSAY",
+                options: q.options || [],
+                correctAnswer: q.correctAnswer ?? 0,
+            });
+        }
+        router.refresh();
+        setIsLoading(false);
+    };
+
+    // Handle import from document
+    const handleImportFromDoc = async (parsedQuestions: ParsedQuestion[]) => {
+        setIsLoading(true);
+        for (const q of parsedQuestions) {
             await createQuestionFromBank(exam.id, {
                 text: q.text,
                 type: q.type === "multiple_choice" ? "MULTIPLE_CHOICE" : "ESSAY",
@@ -202,6 +220,7 @@ export function EditorLayout({ exam, questions }: EditorLayoutProps) {
                     onAdd={handleAdd}
                     onDelete={handleDelete}
                     onImportFromBank={() => setShowBankSelector(true)}
+                    onImportFromDoc={() => setShowDocImport(true)}
                     isLoading={isLoading}
                 />
 
@@ -211,6 +230,13 @@ export function EditorLayout({ exam, questions }: EditorLayoutProps) {
                     onClose={() => setShowBankSelector(false)}
                     onSelectQuestions={handleImportFromBank}
                     existingQuestionIds={questions.map(q => q.id)}
+                />
+
+                {/* Document Import Modal */}
+                <DocumentImportModal
+                    isOpen={showDocImport}
+                    onClose={() => setShowDocImport(false)}
+                    onImport={handleImportFromDoc}
                 />
 
                 {

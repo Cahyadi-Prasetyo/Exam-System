@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, FileText, ListChecks, BookOpen } from "lucide-react";
+import { Plus, Trash2, FileText, ListChecks, BookOpen, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Question {
@@ -17,6 +17,7 @@ interface QuestionListProps {
     onAdd: () => void;
     onDelete: (id: string) => void;
     onImportFromBank?: () => void;
+    onImportFromDoc?: () => void;
     isLoading?: boolean;
 }
 
@@ -27,6 +28,7 @@ export function QuestionList({
     onAdd,
     onDelete,
     onImportFromBank,
+    onImportFromDoc,
     isLoading
 }: QuestionListProps) {
 
@@ -61,6 +63,18 @@ export function QuestionList({
                     >
                         <BookOpen className="w-4 h-4 mr-1.5" />
                         Ambil dari Bank Soal
+                    </Button>
+                )}
+                {onImportFromDoc && (
+                    <Button
+                        onClick={onImportFromDoc}
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs border-emerald-200 text-emerald-600 hover:bg-emerald-50 mt-1.5"
+                        disabled={isLoading}
+                    >
+                        <Upload className="w-4 h-4 mr-1.5" />
+                        Import dari Dokumen
                     </Button>
                 )}
             </div>
