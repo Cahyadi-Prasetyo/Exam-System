@@ -37,7 +37,15 @@ export async function getUsers() {
     }
 }
 
-export async function createUser(data: { name: string; email: string; role: "STUDENT" | "TEACHER" | "ADMIN"; password?: string }) {
+export async function createUser(data: {
+    name: string;
+    email: string;
+    role: "STUDENT" | "TEACHER" | "ADMIN";
+    password?: string;
+    classId?: string;
+    subjectIds?: string[];
+    teacherClassIds?: string[];
+}) {
     const session = await auth();
     if (!session || session.user.role !== "ADMIN") {
         return { error: "Unauthorized" };
@@ -54,14 +62,39 @@ export async function createUser(data: { name: string; email: string; role: "STU
 
         const hashedPassword = await bcrypt.hash(data.password || "password123", 10);
 
-        await prisma.user.create({
+        // Create user with class assignment for students
+        const newUser = await prisma.user.create({
             data: {
                 name: data.name,
                 email: data.email,
                 role: data.role,
-                password: hashedPassword
-            }
+                password: hashedPassword,
+                classId: data.role === "STUDENT" ? data.classId : null,
+            } as any
         });
+
+        // For teachers, create subject and class relations
+        if (data.role === "TEACHER") {
+            // Create TeacherSubject relations
+            if (data.subjectIds && data.subjectIds.length > 0) {
+                await (prisma as any).teacherSubject.createMany({
+                    data: data.subjectIds.map(subjectId => ({
+                        userId: newUser.id,
+                        subjectId
+                    }))
+                });
+            }
+
+            // Create TeacherClass relations
+            if (data.teacherClassIds && data.teacherClassIds.length > 0) {
+                await (prisma as any).teacherClass.createMany({
+                    data: data.teacherClassIds.map(classId => ({
+                        userId: newUser.id,
+                        classId
+                    }))
+                });
+            }
+        }
 
         revalidatePath("/admin/users");
         return { success: true };

@@ -26,8 +26,67 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // For Students: belongs to one class
+  classId String?
+  class   Class?  @relation("StudentClass", fields: [classId], references: [id])
+
+  // For Teachers: teaches multiple classes and subjects
+  teacherClasses  TeacherClass[]
+  teacherSubjects TeacherSubject[]
+
   // Relations
   examAttempts ExamAttempt[]
+}
+
+// Kelas (X-IPA-1, XI-IPS-2, dll)
+model Class {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  grade     Int      // 10, 11, 12
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  students User[]         @relation("StudentClass")
+  teachers TeacherClass[]
+}
+
+// Mata Pelajaran
+model Subject {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  code      String?  // MAT, BIN, FIS
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  teachers TeacherSubject[]
+}
+
+// Relasi Guru <-> Kelas (Many-to-Many)
+model TeacherClass {
+  id        String   @id @default(cuid())
+  userId    String
+  classId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId])
+}
+
+// Relasi Guru <-> Mapel (Many-to-Many)
+model TeacherSubject {
+  id        String   @id @default(cuid())
+  userId    String
+  subjectId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subjectId])
 }
 
 model Exam {
