@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { getProfile, updateProfile, changePassword } from "@/actions/profile-actions";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Calendar, Lock, Save, Loader2 } from "lucide-react";
+import { User, Mail, Calendar, Lock, Save, Loader2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 interface UserProfile {
     id: string;
@@ -133,14 +134,21 @@ export function ProfilePage() {
     return (
         <div className="p-4 sm:p-8 max-w-3xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold flex items-center gap-3">
-                    <User className="w-8 h-8 text-indigo-600" />
-                    Profil Saya
-                </h1>
-                <p className="text-muted-foreground mt-1">
-                    Kelola informasi akun Anda
-                </p>
+            <div className="mb-8 flex items-center gap-4">
+                <Link href={profile.role === "ADMIN" ? "/admin/dashboard" : profile.role === "TEACHER" ? "/teacher/dashboard" : "/student/dashboard"}>
+                    <Button variant="ghost" size="icon" className="shrink-0">
+                        <ArrowLeft className="h-5 w-5" />
+                    </Button>
+                </Link>
+                <div>
+                    <h1 className="text-3xl font-bold flex items-center gap-3">
+                        <User className="w-8 h-8 text-indigo-600" />
+                        Profil Saya
+                    </h1>
+                    <p className="text-muted-foreground mt-1">
+                        Kelola informasi akun Anda
+                    </p>
+                </div>
             </div>
 
             {/* Profile Card */}
