@@ -64,7 +64,7 @@ export default function SubjectsPage() {
         }
 
         if (result.success) {
-            toast({ title: editingSubject ? "Mapel diupdate" : "Mapel ditambahkan" });
+            toast({ title: editingSubject ? "Mapel diupdate" : "Mapel ditambahkan", variant: "success" });
             setIsModalOpen(false);
             fetchSubjects();
         } else {
@@ -76,7 +76,7 @@ export default function SubjectsPage() {
         if (!confirm("Yakin ingin menghapus mata pelajaran ini?")) return;
         const result = await deleteSubject(id);
         if (result.success) {
-            toast({ title: "Mapel dihapus" });
+            toast({ title: "Mapel dihapus", variant: "success" });
             fetchSubjects();
         } else {
             toast({ title: "Error", description: result.error, variant: "destructive" });
@@ -96,14 +96,14 @@ export default function SubjectsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-lg bg-linear-to-br from-purple-500 to-purple-600 flex items-center justify-center">
                             <BookOpen className="w-5 h-5 text-white" />
                         </div>
                         Manajemen Mata Pelajaran
                     </h1>
                     <p className="text-muted-foreground mt-1">Kelola daftar mata pelajaran</p>
                 </div>
-                <Button onClick={() => handleOpenModal()} className="bg-gradient-to-r from-purple-500 to-purple-600 hover:opacity-90">
+                <Button onClick={() => handleOpenModal()} className="bg-linear-to-r from-purple-500 to-purple-600 hover:opacity-90">
                     <Plus className="w-4 h-4 mr-2" /> Tambah Mapel
                 </Button>
             </div>
@@ -120,7 +120,7 @@ export default function SubjectsPage() {
                         className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background"
                     />
                 </div>
-                <div className="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-3 rounded-lg text-white flex items-center gap-3">
+                <div className="bg-linear-to-r from-purple-500 to-purple-600 px-6 py-3 rounded-lg text-white flex items-center gap-3">
                     <BookOpen className="w-5 h-5" />
                     <div>
                         <div className="text-2xl font-bold">{subjects.length}</div>
@@ -144,13 +144,13 @@ export default function SubjectsPage() {
                         <div key={subj.id} className="bg-card border rounded-xl p-5 hover:shadow-lg transition-all hover:-translate-y-0.5 group">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${getColorByIndex(index)} flex items-center justify-center text-white font-bold text-sm`}>
+                                    <div className={`w-12 h-12 rounded-lg bg-linear-to-br ${getColorByIndex(index)} flex items-center justify-center text-white font-bold text-sm`}>
                                         {subj.code || subj.name.substring(0, 3).toUpperCase()}
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-lg">{subj.name}</h3>
                                         {subj.code && (
-                                            <span className={`text-xs bg-gradient-to-r ${getColorByIndex(index)} bg-clip-text text-transparent font-medium`}>
+                                            <span className={`text-xs bg-linear-to-r ${getColorByIndex(index)} bg-clip-text text-transparent font-medium`}>
                                                 {subj.code}
                                             </span>
                                         )}
@@ -213,7 +213,7 @@ export default function SubjectsPage() {
                             <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>
                                 Batal
                             </Button>
-                            <Button type="submit" className="bg-gradient-to-r from-purple-500 to-purple-600 hover:opacity-90">
+                            <Button type="submit" className="bg-linear-to-r from-purple-500 to-purple-600 hover:opacity-90">
                                 {editingSubject ? "Update" : "Tambah"}
                             </Button>
                         </DialogFooter>

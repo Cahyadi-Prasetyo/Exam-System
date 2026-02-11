@@ -55,7 +55,7 @@ export default function ClassesPage() {
         }
 
         if (result.success) {
-            toast({ title: editingClass ? "Kelas diupdate" : "Kelas ditambahkan" });
+            toast({ title: editingClass ? "Kelas diupdate" : "Kelas ditambahkan", variant: "success" });
             setIsModalOpen(false);
             fetchClasses();
         } else {
@@ -67,7 +67,7 @@ export default function ClassesPage() {
         if (!confirm("Yakin ingin menghapus kelas ini?")) return;
         const result = await deleteClass(id);
         if (result.success) {
-            toast({ title: "Kelas dihapus" });
+            toast({ title: "Kelas dihapus", variant: "success" });
             fetchClasses();
         } else {
             toast({ title: "Error", description: result.error, variant: "destructive" });

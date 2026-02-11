@@ -197,7 +197,8 @@ export function DocumentImportModal({ isOpen, onClose, onImport }: DocumentImpor
             onImport(parsedQuestions);
             toast({
                 title: "Berhasil!",
-                description: `${parsedQuestions.length} soal berhasil diimpor`
+                description: `${parsedQuestions.length} soal berhasil diimpor`,
+                variant: "success"
             });
             handleClose();
         } catch (error) {

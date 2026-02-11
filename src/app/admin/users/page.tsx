@@ -65,6 +65,7 @@ export default function UsersPage() {
                 toast({
                     title: "Password Reset Berhasil",
                     description: `Password untuk ${user.email} telah direset menjadi '${res.newPassword}'`,
+                    variant: "success",
                 });
             } else {
                 toast({
@@ -79,19 +80,19 @@ export default function UsersPage() {
     const handleUserCreated = () => {
         fetchUsers();
         setIsAddModalOpen(false);
-        toast({ title: "User Berhasil Dibuat" });
+        toast({ title: "User Berhasil Dibuat", variant: "success" });
     };
 
     const handleUserUpdated = () => {
         fetchUsers();
         setIsEditModalOpen(false);
-        toast({ title: "User Berhasil Diupdate" });
+        toast({ title: "User Berhasil Diupdate", variant: "success" });
     };
 
     const handleUserDeleted = () => {
         fetchUsers();
         setIsDeleteDialogOpen(false);
-        toast({ title: "User Berhasil Dihapus" });
+        toast({ title: "User Berhasil Dihapus", variant: "success" });
     };
 
     const columns = [
