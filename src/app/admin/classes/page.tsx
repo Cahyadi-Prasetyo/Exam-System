@@ -97,14 +97,14 @@ export default function ClassesPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                             <GraduationCap className="w-5 h-5 text-white" />
                         </div>
                         Manajemen Kelas
                     </h1>
                     <p className="text-muted-foreground mt-1">Kelola daftar kelas di sekolah</p>
                 </div>
-                <Button onClick={() => handleOpenModal()} className="bg-gradient-to-r from-blue-500 to-blue-600 hover:opacity-90">
+                <Button onClick={() => handleOpenModal()} className="bg-linear-to-r from-blue-500 to-blue-600 hover:opacity-90">
                     <Plus className="w-4 h-4 mr-2" /> Tambah Kelas
                 </Button>
             </div>
@@ -126,7 +126,7 @@ export default function ClassesPage() {
                 {[10, 11, 12].map(grade => {
                     const count = classes.filter(c => c.grade === grade).length;
                     return (
-                        <div key={grade} className={`bg-gradient-to-br ${gradeColors[grade]} p-4 rounded-xl text-white`}>
+                        <div key={grade} className={`bg-linear-to-br ${gradeColors[grade]} p-4 rounded-xl text-white`}>
                             <div className="text-2xl font-bold">{count}</div>
                             <div className="text-sm opacity-80">Kelas {gradeLabel(grade)}</div>
                         </div>
@@ -149,7 +149,7 @@ export default function ClassesPage() {
                         <div key={cls.id} className="bg-card border rounded-xl p-5 hover:shadow-lg transition-all hover:-translate-y-0.5">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradeColors[cls.grade] || gradeColors[10]} flex items-center justify-center text-white font-bold`}>
+                                    <div className={`w-12 h-12 rounded-lg bg-linear-to-br ${gradeColors[cls.grade] || gradeColors[10]} flex items-center justify-center text-white font-bold`}>
                                         {gradeLabel(cls.grade)}
                                     </div>
                                     <div>
@@ -211,7 +211,7 @@ export default function ClassesPage() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, grade })}
                                         className={`py-3 rounded-lg border-2 font-medium transition-all ${formData.grade === grade
-                                            ? `border-transparent bg-gradient-to-r ${gradeColors[grade]} text-white`
+                                            ? `border-transparent bg-linear-to-r ${gradeColors[grade]} text-white`
                                             : "border-border hover:border-primary/50"
                                             }`}
                                     >
@@ -224,7 +224,7 @@ export default function ClassesPage() {
                             <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>
                                 Batal
                             </Button>
-                            <Button type="submit" className={`bg-gradient-to-r ${gradeColors[formData.grade]} hover:opacity-90`}>
+                            <Button type="submit" className={`bg-linear-to-r ${gradeColors[formData.grade]} hover:opacity-90`}>
                                 {editingClass ? "Update" : "Tambah"}
                             </Button>
                         </DialogFooter>
